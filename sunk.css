@@ -1,12 +1,14 @@
+/* Mobiler saknar Comic Sans och Impact: Comic Neue och Anton är reserverna */
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Comic+Neue:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 /* Sunkkommittéen - tema: parkeringsplats bakom en soptunna
    asfalt #1e1e1c   container #2f3b26   rost #a8501a / #5a2d0c
    nikotin #c9b458  kissgul #e0c020     slask #33301f   betong #b3b0a0 */
-body { font-family: "Comic Sans MS", "Comic Sans", cursive; color: #c2c59a;
+body { font-family: "Comic Sans MS", "Comic Sans", "Comic Neue", cursive; color: #c2c59a;
        background: #1e1e1c url(parkering-ryd.jpg) center center / cover no-repeat fixed; }
 a { color: #e0c020; font-weight: bold; }
 a:visited { color: #8f8454; }
 a:hover { color: #1e1e1c; background: #e0c020; }
-h1 { font-family: Impact, "Arial Black", sans-serif; font-size: 44px; letter-spacing: 4px; font-weight: normal;
+h1 { font-family: Impact, "Anton", "Arial Black", sans-serif; font-size: 44px; letter-spacing: 4px; font-weight: normal;
      color: #e0c020; text-shadow: 3px 3px 0 #5a2d0c, 5px 5px 0 #000; margin: 6px; }
 h2 { color: #c9b458; font-family: "Times New Roman", serif; border-bottom: 2px dashed #a8501a; }
 td { font-size: 15px; }
