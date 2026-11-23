@@ -1,0 +1,9 @@
+Sunkkommittéen - tack till
+
+hall-upp.mp3
+  "Drink Pouring Sound Effects | No Copyright | Free" av Friendly Free Sounds
+  https://www.youtube.com/watch?v=fxkVGyQWpZc
+  Licens: Creative Commons Attribution (CC BY). Klippt till de första 6 sekunderna.
+
+drinks.js
+  Dryckesdata från https://alkolist.github.io/ (Systembolagets sortiment)
