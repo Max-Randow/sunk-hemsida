@@ -94,14 +94,15 @@
     g.fillStyle = hover ? '#ffffff' : '#ffcc00';
     g.fillRect(1, -1, 2, 2);
 
-    var a = Math.floor(aska);
+    // avrunda gränserna, inte längderna, annars hoppar filtret en pixel fram och tillbaka
+    var a = Math.round(aska);
+    var slut = Math.round(aska + papper);
     g.fillStyle = '#8a8a8a'; g.fillRect(4, -3, a, 6);
     g.fillStyle = '#5c5c5c';
     for (var i = 0; i < a; i += 2) g.fillRect(4 + i, i % 4 ? -3 : 0, 1, 3);
 
-    var p = Math.ceil(papper);
-    ritaPapper(4 + a, p);
-    ritaFilter(4 + a + p);
+    ritaPapper(4 + a, slut - a);
+    ritaFilter(4 + slut);
     g.restore();
   }
 
