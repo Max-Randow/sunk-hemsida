@@ -28,6 +28,7 @@
   &raquo; <a href="#om">Om kommittén</a><br>
   &raquo; <a href="stadgar.html">Stadgar</a><br>
   &raquo; <a href="#recept">GT-receptet</a><br>
+  &raquo; <a href="drinkar.html">Drinkar</a><br>
   &raquo; <a href="hogre-lagre.html">Högre/Lägre</a> <font size="1" color="#d0281e" class="blink">NYTT!</font><br>
   <br><hr color="#a8501a">
   <font size="2">Du är besökare nr:</font><br>
@@ -71,6 +72,12 @@
 </td>
 </tr>
 
+<tr><td colspan="2" align="center" bgcolor="#5a2d0c">
+  <font size="5" color="#e0c020"><b><span class="blink">***</span> Dagens Drink! <span class="blink">***</span></b></font><br>
+  <font size="4" color="#c9b458"><b id="ddNamn"></b></font><br>
+  <font size="2"><span id="ddRecept"></span></font>
+</td></tr>
+
 <tr><td colspan="2" align="center" bgcolor="#2f3b26">
   <font size="2" color="#c9b458">
   <a href="#hem">[ Till toppen ]</a> &nbsp; &copy; 1997 Sunkkommittéen &nbsp; Webmaster: kommittén<br>
@@ -106,6 +113,29 @@ setInterval(function () {
 }, 1000);
 var titel = '~*~ SUNKKOMMITTÉEN ~*~ Officiell Hemsida ~*~ Skål! ';
 setInterval(function () { titel = titel.substring(1) + titel.charAt(0); document.title = titel; }, 250);
+// --- dagens drink (byts vid midnatt) ---
+var DAGENS = [
+  ['Parkeringsböter', '8 cl gin, 2 cl tonic. Rör inte om. Betala senare.'],
+  ['Konfa-kaffe', 'Kallt kaffe, lika mycket vodka. Drick stående.'],
+  ['Blå Camel', 'Gin, blå curaçao, en skvätt tonic. Serveras med cigg.'],
+  ['Bottenskrapet', 'Det sista ur alla flaskor på bordet. Ingen is.'],
+  ['Ryds Hämnd', 'Rom, gin och Monster. Skaka burken. Spring.'],
+  ['GT 95-5', 'Gin. Visa tonicflaskan för glaset. Klart.'],
+  ['Container Colada', 'Rom, mer rom, ananasjuice om det finns. Drick ur mugg.'],
+  ['Ingefära Shot Deluxe', 'Ingefärashot, vodka, ånger. I den ordningen.'],
+  ['Mintu Ficka', 'Mintu direkt ur fickan. Kroppsvarm. Inget glas.'],
+  ['Dag 3', 'Gårdagens GT, påfylld med gin. Ät inget.'],
+  ['Isbadet', 'Gin, is, mer is, gin igen. Man kan inte hata.'],
+  ['Asfaltskyss', 'Jäger, svart rom, en droppe cola för färgen.'],
+  ['Horbloss Sour', 'Gin, citron, socker. Ett bloss mellan varje klunk.'],
+  ['Dubbeldusch', 'Två GT, en i varje hand. Drick samtidigt.']
+];
+(function () {
+  var dag = Math.floor((Date.now() - new Date().getTimezoneOffset() * 60000) / 86400000);
+  var d = DAGENS[dag % DAGENS.length];
+  document.getElementById('ddNamn').textContent = d[0];
+  document.getElementById('ddRecept').textContent = d[1];
+})();
 </script>
 <script src="ciggy.js"></script>
 </body>
