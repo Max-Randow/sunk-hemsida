@@ -40,5 +40,8 @@ table[bordercolor] { border-style: ridge; }
 .rull > span { display: inline-block; padding-left: 100%; animation: rull 24s linear infinite; }
 @keyframes rull { to { transform: translateX(-100%); } }
 
+/* av/på-knapp för bakgrundsmusiken */
+#musik-knapp { position: fixed; right: 10px; bottom: 10px; z-index: 9000; font-weight: bold; }
+
 html.ciggy, html.ciggy * { cursor: none !important; }
 #ciggy-canvas { position: fixed; left: 0; top: 0; z-index: 99999; pointer-events: none; }
