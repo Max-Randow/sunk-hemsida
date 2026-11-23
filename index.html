@@ -12,7 +12,7 @@
 <tr><td colspan="2" align="center" bgcolor="#2f3b26">
   <font size="2" color="#e0c020"><span class="blink">*** NYTT! ***</span> Hemsidan är äntligen online!!! <span class="blink">*** NYTT! ***</span></font>
   <br><img src="sunk.svg#svgView(viewBox(170,220,720,1010))" class="logga" height="340" alt="Sunkkommittéen"><br><br>
-  <font color="#c9b458" size="4"><i>"Vi hänger. Vi dricker gin &amp; tonic. Det är allt."</i></font>
+  <font color="#c9b458" size="4"><i>"Nej, han är inte så full"</i></font>
 </td></tr>
 
 <tr><td colspan="2" bgcolor="#5a2d0c">
@@ -46,7 +46,7 @@
   <h2>Välkommen!!!</h2>
   <p>Hej och <span class="rainbow"><b>VÄLKOMMEN</b></span> till Sunkkommittéens hemsida på
   <i>Informationsmotorvägen</i>! Här hittar du allt du behöver veta om kommittén, vilket inte är särskilt mycket.</p>
-  <p align="center"><button class="btn" onclick="alert('Skål!!!\n\n// Sunkkommittéen')">KLICKA HÄR FÖR EN ÖVERRASKNING</button></p>
+  <p align="center"><button class="btn" onclick="explodera(event)">KLICKA HÄR FÖR EN ÖVERRASKNING</button></p>
 
   <a name="om"></a>
   <h2>Om kommittén</h2>
@@ -136,6 +136,83 @@ var DAGENS = [
   document.getElementById('ddNamn').textContent = d[0];
   document.getElementById('ddRecept').textContent = d[1];
 })();
+// --- överraskningen: hela sidan sprängs ---
+var sprangd = false;
+function explodera(e) {
+  if (sprangd) return;
+  sprangd = true;
+  var cx = e && e.clientX ? e.clientX : innerWidth / 2, cy = e && e.clientY ? e.clientY : innerHeight / 2;
+  document.documentElement.style.overflow = 'hidden';
+
+  // vit blixt
+  var blixt = document.createElement('div');
+  blixt.style.cssText = 'position:fixed;left:0;top:0;width:100%;height:100%;background:#fff;z-index:99980;pointer-events:none;transition:opacity 0.6s';
+  document.body.appendChild(blixt);
+  setTimeout(function () { blixt.style.opacity = 0; }, 60);
+
+  // allt på sidan flyger iväg från smällen
+  var bitar = document.querySelectorAll('td, img, h2, p, ul, li, button, hr, .counter');
+  for (var i = 0; i < bitar.length; i++) {
+    var b = bitar[i], r = b.getBoundingClientRect();
+    var dx = r.left + r.width / 2 - cx, dy = r.top + r.height / 2 - cy;
+    var l = Math.sqrt(dx * dx + dy * dy) || 1, kraft = 500 + Math.random() * 1100;
+    if (getComputedStyle(b).display == 'inline') b.style.display = 'inline-block';
+    b.style.transition = 'transform ' + (1.2 + Math.random()) + 's cubic-bezier(.1,.7,.3,1), opacity 1.5s 1s';
+    b.style.transform = 'translate(' + Math.round(dx / l * kraft + (Math.random() - 0.5) * 300) + 'px,' +
+      Math.round(dy / l * kraft + (Math.random() - 0.5) * 300) + 'px) rotate(' +
+      Math.round((Math.random() - 0.5) * 1440) + 'deg) scale(' + (0.3 + Math.random() * 1.2).toFixed(2) + ')';
+    b.style.opacity = 0;
+  }
+  var tabell = document.querySelector('table');
+  tabell.style.transition = 'opacity 1.5s 0.8s'; tabell.style.opacity = 0;
+
+  // eld, rök och skräp
+  var c = document.createElement('canvas');
+  c.width = innerWidth; c.height = innerHeight;
+  c.style.cssText = 'position:fixed;left:0;top:0;z-index:99985;pointer-events:none';
+  document.body.appendChild(c);
+  var g = c.getContext('2d'), gnistor = [], farger = ['#ffe600', '#ff9a1a', '#e00000', '#ffffff', '#555555', '#222222'];
+  for (var k = 0; k < 320; k++) {
+    var v = Math.random() * 6.2832, fart = 2 + Math.random() * 16;
+    gnistor.push({ x: cx, y: cy, vx: Math.cos(v) * fart, vy: Math.sin(v) * fart - 3,
+                   s: 2 + Math.random() * 9, liv: 0.6 + Math.random() * 0.9, farg: farger[k % farger.length] });
+  }
+  var forra = performance.now();
+  (function rita(nu) {
+    var dt = Math.min(3, (nu - forra) / 16.7); forra = nu;
+    g.clearRect(0, 0, c.width, c.height);
+    var kvar = 0;
+    for (var j = 0; j < gnistor.length; j++) {
+      var p = gnistor[j];
+      if (p.liv <= 0) continue;
+      kvar++;
+      p.vy += 0.25 * dt; p.vx *= Math.pow(0.985, dt);
+      p.x += p.vx * dt; p.y += p.vy * dt; p.liv -= 0.012 * dt;
+      g.globalAlpha = Math.max(0, Math.min(1, p.liv * 2));
+      g.fillStyle = p.farg; g.fillRect(p.x, p.y, p.s, p.s);
+    }
+    if (kvar) requestAnimationFrame(rita); else c.remove();
+  })(forra);
+
+  // skakning
+  var t0 = performance.now();
+  (function skaka(nu) {
+    var t = (nu - t0) / 700;
+    if (t >= 1) { document.body.style.transform = ''; return; }
+    var a = (1 - t) * 18;
+    document.body.style.transform = 'translate(' + ((Math.random() - 0.5) * a) + 'px,' + ((Math.random() - 0.5) * a) + 'px)';
+    requestAnimationFrame(skaka);
+  })(t0);
+
+  // efteråt: bara parkeringen kvar
+  setTimeout(function () {
+    var ruta = document.createElement('div');
+    ruta.style.cssText = 'position:fixed;left:0;top:35%;width:100%;text-align:center;z-index:99990';
+    ruta.innerHTML = '<h1 style="font-family:Comic Sans MS,Comic Sans,Comic Neue,cursive;font-weight:bold;letter-spacing:1px">Jahopp</h1><p><font size="4" color="#ffe600"><b>Bra jobbat. Verkligen.</b></font></p>' +
+      '<button class="btn" onclick="location.reload()">BYGG UPP DEN IGEN</button>';
+    document.body.appendChild(ruta);
+  }, 2600);
+}
 </script>
 <script src="ciggy.js"></script>
 </body>
