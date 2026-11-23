@@ -6,7 +6,13 @@
 <link rel="stylesheet" href="sunk.css">
 <style>
 h1 { font-family: "Comic Sans MS", "Comic Sans", "Comic Neue", cursive; font-weight: bold; letter-spacing: 1px; }
-.drink { color: #e0c020; font-size: 17px; font-weight: bold; }
+.drink { color: #e0c020; font-size: 17px; font-weight: bold; animation: blixt 0.8s steps(1) infinite; }
+tr:nth-child(odd) .drink { animation-delay: 0.4s; }
+@keyframes blixt { 50% { color: #d0281e; } }
+.tagg { font-size: 10px; color: #d0281e; background: #e0c020; padding: 0 3px; }
+.snabb { animation: blink 0.5s steps(1) infinite; }
+#drinkar { animation: ram 1s steps(1) infinite; }
+@keyframes ram { 50% { border-color: #e0c020; } }
 #drinkar td { vertical-align: top; }
 </style>
 </head>
@@ -15,8 +21,9 @@ h1 { font-family: "Comic Sans MS", "Comic Sans", "Comic Neue", cursive; font-wei
 <table width="780" border="4" cellpadding="6" cellspacing="0" bordercolor="#a8501a" bgcolor="#23241f">
 <tr><td align="center" bgcolor="#2f3b26">
   <a href="index.html"><img src="sunk.svg#svgView(viewBox(170,220,720,1010))" class="logga" height="130" border="0" alt="Sunkkommittéen"></a>
-  <h1>DRINKAR</h1>
-  <font color="#c9b458" size="4"><i>Kommitténs samlade kunskap, i flytande form</i></font><br><br>
+  <h1><span class="blink">***</span> DRINKAR <span class="blink">***</span></h1>
+  <font color="#c9b458" size="4"><i>Kommitténs samlade kunskap, i flytande form</i></font><br>
+  <font color="#d0281e" size="4"><b class="snabb">!!! VARNING: STARKA GREJER !!!</b></font><br><br>
   <a href="index.html">&laquo; Tillbaka till startsidan</a>
 </td></tr>
 <tr><td bgcolor="#5a2d0c">
@@ -28,12 +35,12 @@ h1 { font-family: "Comic Sans MS", "Comic Sans", "Comic Neue", cursive; font-wei
       <td width="150"><b>Drink</b></td><td width="230"><b>Du behöver</b></td><td><b>Gör så här</b></td>
     </tr>
     <tr>
-      <td class="drink">Strongster</td>
+      <td class="drink">Strongster<br><span class="tagg snabb">LIVSFARLIG!</span></td>
       <td>4 cl Stroh 80<br>1 burk vit Monster (50 cl)<br>Is</td>
       <td>Is i ett stort glas. Stroh först, fyll upp med Monster. Rör om en gång. Sov inte.</td>
     </tr>
     <tr>
-      <td class="drink">Kommitténs GT</td>
+      <td class="drink">Kommitténs GT<br><span class="tagg blink">OFFICIELL</span></td>
       <td>6 cl gin<br>2 cl tonic<br>Is, lime</td>
       <td>75-25, som stadgarna kräver. Is, gin, tonic, lime. Mindre gin än så är inte en GT.</td>
     </tr>
@@ -43,7 +50,7 @@ h1 { font-family: "Comic Sans MS", "Comic Sans", "Comic Neue", cursive; font-wei
       <td>Rör med is, sila upp i lågt glas. Apelsinskal om du vill verka vuxen.</td>
     </tr>
     <tr>
-      <td class="drink">Bottenskrapet</td>
+      <td class="drink">Bottenskrapet<br><span class="tagg blink">KLASSIKER</span></td>
       <td>Det som är kvar i alla flaskor på bordet</td>
       <td>Häll ihop. Smaka inte först. Ingen is, den är slut ändå.</td>
     </tr>
@@ -103,7 +110,7 @@ h1 { font-family: "Comic Sans MS", "Comic Sans", "Comic Neue", cursive; font-wei
       <td>Häll upp ginen. Visa tonicflaskan för glaset. Klart.</td>
     </tr>
     <tr>
-      <td class="drink">Espresso Martini</td>
+      <td class="drink">Espresso Martini<br><span class="tagg blink">NYTT!</span></td>
       <td>4 cl vodka<br>2 cl kaffelikör<br>3 cl espresso</td>
       <td>Skaka hårt med is, sila upp. Tre kaffebönor på toppen. Nu är du vaken och full.</td>
     </tr>
@@ -168,7 +175,7 @@ h1 { font-family: "Comic Sans MS", "Comic Sans", "Comic Neue", cursive; font-wei
       <td>Stöt basilikan, skaka allt med is, sila upp. Grönt räknas som sallad.</td>
     </tr>
     <tr>
-      <td class="drink">Strongster Deluxe</td>
+      <td class="drink">Strongster Deluxe<br><span class="tagg snabb">ÄNNU VÄRRE!</span></td>
       <td>6 cl Stroh 80<br>1 burk vit Monster (50 cl)<br>Ingen is</td>
       <td>Drick ur burken tills Strohen får plats. Häll i. Ångra dig i morgon.</td>
     </tr>
@@ -180,7 +187,7 @@ h1 { font-family: "Comic Sans MS", "Comic Sans", "Comic Neue", cursive; font-wei
   </table>
 </td></tr>
 <tr><td align="center" bgcolor="#2f3b26">
-  <font size="2" color="#c9b458"><a href="index.html">[ Tillbaka till startsidan ]</a> &nbsp; &copy; 1997 Sunkkommittéen</font>
+  <font size="2" color="#c9b458"><a href="index.html">[ Tillbaka till startsidan ]</a> &nbsp; &copy; 1997 Sunkkommittéen<br><span class="blink"><font color="#d0281e" size="3"><b>Drick ansvarslöst.</b></font></span></font>
 </td></tr>
 </table>
 </center>
