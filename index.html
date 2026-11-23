@@ -81,6 +81,7 @@
 <tr><td colspan="2" align="center" bgcolor="#2f3b26">
   <font size="2" color="#c9b458">
   <a href="#hem">[ Till toppen ]</a> &nbsp; &copy; 1997 Sunkkommittéen &nbsp; Webmaster: kommittén<br>
+  <font size="1">Hälljud: <a href="https://www.youtube.com/watch?v=fxkVGyQWpZc" target="_blank" rel="noreferrer">Drink Pouring Sound Effects</a> av Friendly Free Sounds (CC BY)</font><br>
   <span class="blink"><font color="#d0281e" size="3"><b>Rökning dödar.</b></font></span>
   </font>
 </td></tr>
@@ -101,7 +102,9 @@ document.getElementById('counter').innerHTML = ('000000' + besok).slice(-6);
 // --- GT-mätare ---
 var gt = parseInt(hamta('sunk_gt', '0'), 10);
 document.getElementById('gt').innerHTML = gt;
+var hallLjud = new Audio('hall-upp.mp3');
 function hallUpp() {
+  try { hallLjud.currentTime = 0; hallLjud.play(); } catch (e) {}
   gt++; spara('sunk_gt', gt);
   document.getElementById('gt').innerHTML = gt;
   if (gt % 5 == 0) alert('Det var GT nummer ' + gt + '.\nKommittén är stolt över dig.');
