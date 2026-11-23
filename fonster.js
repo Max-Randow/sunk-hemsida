@@ -1,8 +1,12 @@
-// Reklamfönster: påhittad cigarettreklam som dyker upp, blinkar och åker runt.
+// Annonsfönster: påhittade cigarettannonser som dyker upp, blinkar och åker runt.
+// Filen och klasserna heter medvetet inte "reklam" eller "ad": sådana namn
+// stoppas av annonsblockerare, och då syns ingenting.
 // Alla märken är hittepå. Både [X] och knappen stänger fönstret och ger två nya.
 (function () {
   var FORSTA = 60000;        // ms på sajten innan det första fönstret (räknas över alla sidor)
   var MELLAN = 9000;         // ms mellan nya fönster
+  var SMITCHANS = 0.7;       // hur ofta ett fönster smiter när man närmar sig [X] eller knappen
+  var MAXFART = 3.5;         // normal toppfart; efter ett smit bromsar fönstret ner hit igen
 
   var REKLAM = [
     ['BOTTENSKRAPET', 'Smaken av en parkering.'],
@@ -23,21 +27,21 @@
   function nytt(x0, y0) {      // x0, y0: var fönstret ska dyka upp (annars slumpas det)
     var r = slump(REKLAM);
     var el = document.createElement('div');
-    el.className = 'reklam';
+    el.className = 'fnstr';
     el.innerHTML =
-      '<div class="reklam-topp"><a href="#" class="reklam-x">[X]</a>*** REKLAM ***</div>' +
-      '<div class="reklam-inne">' +
-        '<div class="reklam-marke"></div>' +
-        '<div class="reklam-cigg"><span></span></div>' +
-        '<div class="reklam-text"></div>' +
+      '<div class="fnstr-topp"><a href="#" class="fnstr-x">[X]</a>*** REKLAM ***</div>' +
+      '<div class="fnstr-inne">' +
+        '<div class="fnstr-marke"></div>' +
+        '<div class="fnstr-cigg"><span></span></div>' +
+        '<div class="fnstr-text"></div>' +
         '<button class="btn"></button>' +
-        '<div class="reklam-fin">Rökning dödar.</div>' +
+        '<div class="fnstr-fin">Rökning dödar.</div>' +
       '</div>';
-    el.querySelector('.reklam-marke').textContent = r[0];
-    el.querySelector('.reklam-text').textContent = r[1];
+    el.querySelector('.fnstr-marke').textContent = r[0];
+    el.querySelector('.fnstr-text').textContent = r[1];
     el.querySelector('button').textContent = slump(KNAPPAR);
     // egen blinktakt per fönster så att de aldrig blinkar i takt
-    el.querySelector('.reklam-inne').style.animationDuration = (0.5 + Math.random() * 0.5).toFixed(2) + 's';
+    el.querySelector('.fnstr-inne').style.animationDuration = (0.5 + Math.random() * 0.5).toFixed(2) + 's';
     document.body.appendChild(el);
 
     var f = {
@@ -61,10 +65,35 @@
       el.remove();                     // försvinner direkt, ingen animation
       nytt(f.x, f.y); nytt(f.x, f.y);  // två nya hoppar fram ur samma ställe
     }
-    var x = el.querySelector('.reklam-x');
+    var x = el.querySelector('.fnstr-x');
     x.addEventListener('pointerdown', stang);
     x.addEventListener('click', function (e) { e.preventDefault(); });   // hoppa inte till sidans topp
-    el.querySelector('button').addEventListener('pointerdown', stang);
+    var knapp = el.querySelector('button');
+    knapp.addEventListener('pointerdown', stang);
+
+    // När pekaren når [X] eller knappen smiter fönstret oftast undan: ett hopp bort
+    // från pekaren och sedan full fart åt samma håll. Ibland står det kvar, så att
+    // det går att stänga om man är envis.
+    function smit(e) {
+      if (Math.random() > SMITCHANS) return;
+      var dx = f.x + f.w / 2 - e.clientX, dy = f.y + f.h / 2 - e.clientY;
+      var maxX = Math.max(0, innerWidth - f.w), maxY = Math.max(0, innerHeight - f.h);
+      var hopp = 90 + Math.random() * 110;
+      // Första försöket går bort från pekaren (lite på snedden). Står fönstret i ett
+      // hörn hamnar det hoppet utanför skärmen, och då provas andra håll.
+      var v = Math.atan2(dy, dx) + (Math.random() - 0.5) * 1.6, nx, ny;
+      for (var n = 0; n < 10; n++) {
+        nx = f.x + Math.cos(v) * hopp; ny = f.y + Math.sin(v) * hopp;
+        if (nx >= 0 && nx <= maxX && ny >= 0 && ny <= maxY) break;
+        v = Math.random() * 6.2832;
+      }
+      f.x = Math.min(Math.max(0, nx), maxX);
+      f.y = Math.min(Math.max(0, ny), maxY);
+      var fart = 9 + Math.random() * 6;
+      f.vx = Math.cos(v) * fart; f.vy = Math.sin(v) * fart;
+    }
+    x.addEventListener('pointerenter', smit);
+    knapp.addEventListener('pointerenter', smit);
   }
 
   var forra = performance.now();
@@ -72,6 +101,8 @@
     var dt = Math.min(3, (nu - forra) / 16.7); forra = nu;
     for (var i = 0; i < fonster.length; i++) {
       var f = fonster[i];
+      var fart = Math.sqrt(f.vx * f.vx + f.vy * f.vy);
+      if (fart > MAXFART) { var broms = Math.pow(0.97, dt); f.vx *= broms; f.vy *= broms; }
       var maxX = innerWidth - f.w, maxY = innerHeight - f.h;
       f.x += f.vx * dt; f.y += f.vy * dt;
       if (f.x < 0) { f.x = 0; f.vx = Math.abs(f.vx); }
@@ -87,8 +118,8 @@
   // minuten räknas från första sidan man kom in på, inte om för varje sida
   var start = Date.now();
   try {
-    start = parseInt(sessionStorage.getItem('sunk_reklam_start'), 10) || start;
-    sessionStorage.setItem('sunk_reklam_start', start);
+    start = parseInt(sessionStorage.getItem('sunk_popup_start'), 10) || start;
+    sessionStorage.setItem('sunk_popup_start', start);
   } catch (e) {}
   var vanta = Math.max(1000, FORSTA - (Date.now() - start));
   setTimeout(function () { nytt(); setInterval(function () { nytt(); }, MELLAN); }, vanta);
