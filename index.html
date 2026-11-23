@@ -1,0 +1,113 @@
+<html>
+<head>
+<meta charset="utf-8">
+<title>~*~ SUNKKOMMITTÉEN ~*~ Officiell Hemsida ~*~</title>
+<link rel="icon" href="sunk.svg">
+<link rel="stylesheet" href="sunk.css">
+</head>
+<body bgcolor="#1e1e1c" text="#c2c59a" link="#e0c020" vlink="#8f8454">
+<center>
+
+<table width="780" border="4" cellpadding="6" cellspacing="0" bordercolor="#a8501a" bgcolor="#23241f">
+<tr><td colspan="2" align="center" bgcolor="#2f3b26">
+  <font size="2" color="#e0c020"><span class="blink">*** NYTT! ***</span> Hemsidan är äntligen online!!! <span class="blink">*** NYTT! ***</span></font>
+  <br><img src="sunk.svg#svgView(viewBox(170,220,720,1010))" class="logga" height="340" alt="Sunkkommittéen"><br><br>
+  <font color="#c9b458" size="4"><i>"Vi hänger. Vi dricker gin &amp; tonic. Det är allt."</i></font>
+</td></tr>
+
+<tr><td colspan="2" bgcolor="#5a2d0c">
+  <marquee scrollamount="6"><font color="#e0c020" size="4"><b>
+  +++ VÄLKOMMEN TILL SUNKKOMMITTÉENS OFFICIELLA HEMSIDA +++ NÄSTA MÖTE: SNART (TA MED TONIC) +++ ISEN ÄR SLUT IGEN +++ KOM IHÅG LIMEN +++ SUNK ÄR EN LIVSSTIL +++
+  </b></font></marquee>
+</td></tr>
+
+<tr valign="top">
+<td width="170" bgcolor="#33301f">
+  <font color="#a8501a"><b>:: MENY ::</b></font><br><br>
+  &raquo; <a href="#hem">Hem</a><br>
+  &raquo; <a href="#om">Om kommittén</a><br>
+  &raquo; <a href="stadgar.html">Stadgar</a><br>
+  &raquo; <a href="#recept">GT-receptet</a><br>
+  &raquo; <a href="#medlemmar">Medlemmar</a><br>
+  &raquo; <a href="hogre-lagre.html">Högre/Lägre</a> <font size="1" color="#d0281e" class="blink">NYTT!</font><br>
+  <br><hr color="#a8501a">
+  <font size="2">Du är besökare nr:</font><br>
+  <span class="counter" id="counter">000001</span>
+  <br><br><hr color="#a8501a">
+  <font size="2" color="#c9b458">GT-mätaren:</font><br>
+  <span class="counter" id="gt">0</span> <font size="2">st</font><br><br>
+  <button class="btn" onclick="hallUpp()">Häll upp en GT</button>
+  <br><br><hr color="#a8501a">
+  <div class="construction" align="center">UNDER<br>CONSTRUCTION</div>
+  <br>
+  <font size="1" color="#888888">Klockan är:<br><span id="klocka">--:--:--</span><br>(dags för en GT)</font>
+</td>
+
+<td width="610">
+  <a name="hem"></a>
+  <h2>Välkommen!!!</h2>
+  <p>Hej och <span class="rainbow"><b>VÄLKOMMEN</b></span> till Sunkkommittéens hemsida på
+  <i>Informationsmotorvägen</i>! Här hittar du allt du behöver veta om kommittén, vilket inte är särskilt mycket.</p>
+  <p align="center"><button class="btn" onclick="alert('Skål!!!\n\n// Sunkkommittéen')">KLICKA HÄR FÖR EN ÖVERRASKNING</button></p>
+
+  <a name="om"></a>
+  <h2>Om kommittén</h2>
+  <p>Sunkkommittéen är ett kompisgäng med ett enda, tydligt och orubbligt syfte: att <b>hänga</b> och
+  <b>dricka gin &amp; tonic</b>. Vi har inga mål, inga visioner och inga kvartalsrapporter.
+  Verksamheten har pågått sedan urminnes tider (oklart exakt när, ingen förde protokoll).</p>
+
+  <a name="recept"></a>
+  <h2>Det officiella GT-receptet</h2>
+  <ul>
+    <li>Gin (generöst)</li>
+    <li>Tonic (resten av glaset)</li>
+    <li>Is (mycket)</li>
+    <li>Lime eller citron (om någon kom ihåg att köpa)</li>
+  </ul>
+  <p><font color="#e0c020">Tillagning:</font> Häll allt i ett glas. Rör om med det som finns till hands. <span class="blink">Skål!</span></p>
+
+  <a name="medlemmar"></a>
+  <h2>Medlemmar</h2>
+  <p class="construction" align="center">Medlemssidan är under uppbyggnad. Kom tillbaka senare!!</p>
+</td>
+</tr>
+
+<tr><td colspan="2" align="center" bgcolor="#2f3b26">
+  <font size="2" color="#c9b458">
+  <a href="#hem">[ Till toppen ]</a> &nbsp; &copy; 1997 Sunkkommittéen &nbsp; Webmaster: kommittén<br>
+  <span class="blink"><font color="#d0281e" size="3"><b>Rökning dödar.</b></font></span>
+  </font>
+</td></tr>
+</table>
+
+</center>
+
+<script>
+// --- lagring som inte kraschar ---
+function hamta(k, d) { try { var v = localStorage.getItem(k); return v === null ? d : v; } catch (e) { return d; } }
+function spara(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+
+// --- besöksräknare ---
+var besok = parseInt(hamta('sunk_besok', '1336'), 10) + 1;
+spara('sunk_besok', besok);
+document.getElementById('counter').innerHTML = ('000000' + besok).slice(-6);
+
+// --- GT-mätare ---
+var gt = parseInt(hamta('sunk_gt', '0'), 10);
+document.getElementById('gt').innerHTML = gt;
+function hallUpp() {
+  gt++; spara('sunk_gt', gt);
+  document.getElementById('gt').innerHTML = gt;
+  if (gt % 5 == 0) alert('Det var GT nummer ' + gt + '.\nKommittén är stolt över dig.');
+}
+
+// --- klocka + rullande titel ---
+setInterval(function () {
+  document.getElementById('klocka').innerHTML = new Date().toLocaleTimeString('sv-SE');
+}, 1000);
+var titel = '~*~ SUNKKOMMITTÉEN ~*~ Officiell Hemsida ~*~ Skål! ';
+setInterval(function () { titel = titel.substring(1) + titel.charAt(0); document.title = titel; }, 250);
+</script>
+<script src="ciggy.js"></script>
+</body>
+</html>

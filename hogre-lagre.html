@@ -1,0 +1,154 @@
+<html>
+<head>
+<meta charset="utf-8">
+<title>~*~ SUNKKOMMITTÉEN ~*~ Högre eller Lägre ~*~</title>
+<link rel="icon" href="sunk.svg">
+<link rel="stylesheet" href="sunk.css">
+<style>
+.kort { height: 220px; }
+.namn { font-size: 20px; color: #e0c020; font-weight: bold; }
+.typ { font-size: 13px; color: #c9b458; }
+.abv { font-family: "Courier New", monospace; font-size: 46px; font-weight: bold; color: #d0281e;
+       background: #000; border: 3px inset #888; padding: 2px 12px; display: inline-block; margin-top: 10px; }
+.stor { font-size: 18px; padding: 8px 22px; font-weight: bold; }
+#besked { font-size: 22px; height: 34px; font-weight: bold; }
+</style>
+</head>
+<body bgcolor="#1e1e1c" text="#c2c59a" link="#e0c020" vlink="#8f8454">
+<center>
+<table width="780" border="4" cellpadding="6" cellspacing="0" bordercolor="#a8501a" bgcolor="#23241f">
+<tr><td colspan="3" align="center" bgcolor="#2f3b26">
+  <a href="index.html"><img src="sunk.svg#svgView(viewBox(170,220,720,1010))" class="logga" height="130" border="0" alt="Sunkkommittéen"></a>
+  <h1>HÖGRE eller LÄGRE</h1>
+  <font color="#c9b458" size="4"><i id="fraga">Vilken dryck har högst alkoholhalt?</i></font><br><br>
+  <a href="index.html">&laquo; Tillbaka till startsidan</a>
+</td></tr>
+<tr><td colspan="3" bgcolor="#5a2d0c">
+  <marquee scrollamount="6"><font color="#e0c020" size="4"><b>+++ GISSA RÄTT ELLER TA EN KLUNK +++ LIKA HALT RÄKNAS SOM RÄTT (KOMMITTÉN ÄR SNÄLL) +++</b></font></marquee>
+</td></tr>
+
+<tr>
+  <td colspan="3" align="center" bgcolor="#33301f">
+    Poäng: <span class="counter" id="poang">0</span> &nbsp;&nbsp;
+    Rekord: <span class="counter" id="rekord">0</span>
+    &nbsp;&nbsp;|&nbsp;&nbsp; <font color="#a8501a"><b>Läge:</b></font>
+    <label><input type="radio" name="lage" value="abv" onclick="bytLage('abv')"> Alkoholhalt</label>
+    <label><input type="radio" name="lage" value="apk" onclick="bytLage('apk')"> APK</label>
+  </td>
+</tr>
+
+<tr valign="middle">
+  <td width="340" align="center" class="kort">
+    <div class="namn" id="namnA"></div>
+    <div class="typ" id="typA"></div>
+    <div class="typ" id="infoA"></div>
+    <div class="abv" id="abvA"></div>
+  </td>
+  <td width="60" align="center" bgcolor="#5a2d0c"><font size="6" color="#a8501a"><b>VS</b></font></td>
+  <td width="340" align="center" class="kort">
+    <div class="namn" id="namnB"></div>
+    <div class="typ" id="typB"></div>
+    <div class="typ" id="infoB"></div>
+    <div class="abv" id="abvB">?? %</div>
+  </td>
+</tr>
+
+<tr><td colspan="3" align="center">
+  <div id="besked">&nbsp;</div>
+  <div id="knappar">
+    <font size="3">Den högra drycken har...</font><br><br>
+    <button class="btn stor" onclick="gissa(1)">▲ HÖGRE</button>
+    &nbsp;&nbsp;
+    <button class="btn stor" onclick="gissa(-1)">▼ LÄGRE</button>
+  </div>
+  <div id="igen" style="display:none">
+    <button class="btn stor" onclick="nyttSpel()">SPELA IGEN</button>
+  </div>
+  <br>
+</td></tr>
+
+<tr><td colspan="3" align="center" bgcolor="#2f3b26">
+  <font size="2" color="#c9b458">
+  Dryckesdata från <a href="https://alkolist.github.io/" target="_blank" rel="noreferrer">alkolist.github.io</a> (Systembolagets sortiment)<br>
+  <a href="index.html">[ Tillbaka till startsidan ]</a> &nbsp; &copy; 1997 Sunkkommittéen
+  </font>
+</td></tr>
+</table>
+</center>
+
+<script src="drinks.js"></script>
+<script>
+// dryck = [namn, typ, alkoholhalt, APK, ml, kr]
+var LAGEN = {
+  abv: { kol: 2, fraga: 'Vilken dryck har högst alkoholhalt?', okand: '?? %',
+         visa: function (d) { return String(d[2]).replace('.', ',') + ' %'; },
+         info: function (d) { return ''; } },
+  apk: { kol: 3, fraga: 'Vilken dryck ger mest alkohol per krona (APK)?', okand: '?,???',
+         visa: function (d) { return d[3].toFixed(3).replace('.', ','); },
+         info: function (d) { return d[4] + ' ml · ' + String(d[5]).replace('.', ',') + ' kr'; } }
+};
+var A, B, poang = 0, last = false, rekord = 0, lage = 'abv', L = LAGEN.abv, vantar = null;
+function minne(k, v) {
+  try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) {}
+  return null;
+}
+function bytLage(nytt) {
+  lage = LAGEN[nytt] ? nytt : 'abv'; L = LAGEN[lage];
+  minne('sunk_hl_lage', lage);
+  rekord = parseInt(minne('sunk_hl_rekord_' + lage) || '0', 10);
+  document.querySelector('input[name=lage][value=' + lage + ']').checked = true;
+  el('fraga').textContent = L.fraga;
+  nyttSpel();
+}
+
+function el(id) { return document.getElementById(id); }
+function slumpa(inte) {
+  var d;
+  do { d = DRINKS[Math.floor(Math.random() * DRINKS.length)]; } while (inte && d[0] == inte[0]);
+  return d;
+}
+function rita() {
+  el('namnA').textContent = A[0]; el('typA').textContent = A[1]; el('abvA').textContent = L.visa(A);
+  el('namnB').textContent = B[0]; el('typB').textContent = B[1]; el('abvB').textContent = L.okand;
+  el('infoA').textContent = L.info(A); el('infoB').textContent = L.info(B);
+  el('abvB').style.color = '#d0281e';
+  el('poang').textContent = poang; el('rekord').textContent = rekord;
+}
+function besked(text, farg) { el('besked').textContent = text; el('besked').style.color = farg; }
+
+function nyttSpel() {
+  clearTimeout(vantar);
+  poang = 0; last = false;
+  A = slumpa(); B = slumpa(A);
+  besked(' ', '#8fd62a');
+  el('knappar').style.display = ''; el('igen').style.display = 'none';
+  rita();
+}
+
+function gissa(riktning) {
+  if (last) return;
+  last = true;
+  var skillnad = B[L.kol] - A[L.kol];
+  var ratt = skillnad == 0 || (skillnad > 0) == (riktning > 0);
+  el('abvB').textContent = L.visa(B);
+  if (ratt) {
+    el('abvB').style.color = '#8fd62a';
+    poang++;
+    if (poang > rekord) { rekord = poang; minne('sunk_hl_rekord_' + lage, rekord); }
+    el('poang').textContent = poang; el('rekord').textContent = rekord;
+    besked(skillnad == 0 ? 'LIKA! Det räknas. Skål!' : 'RÄTT!!! Skål!', '#8fd62a');
+    vantar = setTimeout(function () {
+      A = B; B = slumpa(A); last = false;
+      besked(' ', '#8fd62a');
+      rita();
+    }, 1400);
+  } else {
+    besked('FEL!!! Ta en klunk. Du fick ' + poang + ' poäng.', '#d0281e');
+    el('knappar').style.display = 'none'; el('igen').style.display = '';
+  }
+}
+bytLage(minne('sunk_hl_lage') || 'abv');
+</script>
+<script src="ciggy.js"></script>
+</body>
+</html>
