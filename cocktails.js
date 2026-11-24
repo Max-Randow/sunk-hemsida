@@ -1,6 +1,6 @@
 // Data till Barmaster x9000 (barmaster.html). Se docs/barmaster-spec.md.
 // Recepten är IBA:s cocktails plus kommitténs egna från Drinkar-sidan.
-// Bara vätskor räknas: bitter, garnityr, mynta, socker, ägg och vatten är struket.
+// Bara vätskor räknas: bitter, garnityr, mynta, socker, äggula och vatten är struket.
 
 // flaska = id: [etikett, färg, hylla]
 var FLASKOR = {
@@ -81,6 +81,7 @@ var FLASKOR = {
   flader:      ['Flädersaft', '#eaeaa8', 'Sirap & grädde'],
   gradde:      ['Grädde', '#fbf6e6', 'Sirap & grädde'],
   kokos:       ['Kokoskräm', '#f6f2ea', 'Sirap & grädde'],
+  aggvita:     ['Äggvita', '#f3ecc4', 'Sirap & grädde'],
 
   soda:        ['Sodavatten', '#dcecf2', 'Läsk'],
   tonic:       ['Tonic', '#e2eede', 'Läsk'],
@@ -119,7 +120,7 @@ var COCKTAILS = [
   ['Dry Martini', 'g', [['gin', 6], ['torrvermouth', 1]]],
   ['Long Island Iced Tea', 'g', [['vodka', 2], ['gin', 2], ['ljusrom', 2], ['tequila', 2], ['triplesec', 2], ['citron', 3], ['cola', 6]]],
   ['Tom Collins', 's', [['gin', 5], ['citron', 3], ['sockerlag', 2], ['soda', 6]]],
-  ['Whiskey Sour', 's', [['bourbon', 5], ['citron', 3], ['sockerlag', 2]]],
+  ['Whiskey Sour', 's', [['bourbon', 5], ['citron', 3], ['sockerlag', 2], ['aggvita', 2]]],
   ['Moscow Mule', 'g', [['vodka', 5], ['lime', 1.5], ['gingerbeer', 12]]],
   ['Espresso Martini', 's', [['vodka', 4], ['kaffelikor', 2], ['espresso', 3]]],
 
@@ -132,7 +133,7 @@ var COCKTAILS = [
   ['Boulevardier', 'g', [['bourbon', 4.5], ['campari', 3], ['rodvermouth', 3]]],
   ['Brandy Crusta', 's', [['konjak', 5], ['maraschino', 1], ['citron', 1.5]]],
   ['Casino', 's', [['gin', 4], ['maraschino', 1], ['citron', 1]]],
-  ['Clover Club', 's', [['gin', 4.5], ['hallonsirap', 1.5], ['citron', 1.5]]],
+  ['Clover Club', 's', [['gin', 4.5], ['hallonsirap', 1.5], ['citron', 1.5], ['aggvita', 1.5]]],
   ['Daiquiri', 's', [['ljusrom', 6], ['lime', 2], ['sockerlag', 1]]],
   ['Gin Fizz', 's', [['gin', 4.5], ['citron', 3], ['sockerlag', 1], ['soda', 8]]],
   ['Hanky Panky', 'g', [['gin', 4.5], ['rodvermouth', 4.5], ['fernet', 0.75]]],
@@ -145,7 +146,7 @@ var COCKTAILS = [
   ['Paradise', 's', [['gin', 3], ['aprikos', 2], ['apelsin', 1.5]]],
   ['Planter\'s Punch', 'g', [['morkrom', 4.5], ['lime', 1.5], ['sockerlag', 3]]],
   ['Porto Flip', 's', [['konjak', 1.5], ['portvin', 4.5]]],
-  ['Ramos Gin Fizz', 's', [['gin', 4.5], ['lime', 1.5], ['citron', 1.5], ['sockerlag', 3], ['gradde', 6], ['soda', 3]]],
+  ['Ramos Gin Fizz', 's', [['gin', 4.5], ['lime', 1.5], ['citron', 1.5], ['sockerlag', 3], ['gradde', 6], ['aggvita', 3], ['soda', 3]]],
   ['Rusty Nail', 'g', [['scotch', 4.5], ['drambuie', 2.5]]],
   ['Sazerac', 'g', [['konjak', 5], ['absint', 1]]],
   ['Sidecar', 's', [['konjak', 5], ['triplesec', 2], ['citron', 2]]],
@@ -185,7 +186,7 @@ var COCKTAILS = [
   ['Mint Julep', 'g', [['bourbon', 6]]],
   ['Mojito', 'g', [['ljusrom', 4.5], ['lime', 2], ['soda', 6]]],
   ['Piña Colada', 'g', [['ljusrom', 5], ['kokos', 3], ['ananas', 5]]],
-  ['Pisco Sour', 's', [['pisco', 6], ['citron', 3], ['sockerlag', 2]]],
+  ['Pisco Sour', 's', [['pisco', 6], ['citron', 3], ['sockerlag', 2], ['aggvita', 3]]],
   ['Screwdriver', 'g', [['vodka', 5], ['apelsin', 10]]],
   ['Sea Breeze', 'g', [['vodka', 4], ['tranbar', 12], ['grapefrukt', 3]]],
   ['Sex on the Beach', 'g', [['vodka', 4], ['persiko', 2], ['apelsin', 4], ['tranbar', 4]]],
@@ -204,7 +205,7 @@ var COCKTAILS = [
   ['Illegal', 's', [['mezcal', 3], ['starkrom', 1.5], ['falernum', 1.5], ['maraschino', 0.5], ['lime', 2.25], ['sockerlag', 1.5]]],
   ['Lemon Drop Martini', 's', [['vodka', 3], ['triplesec', 2], ['citron', 1.5]]],
   ['Naked and Famous', 's', [['mezcal', 2.25], ['chartgul', 2.25], ['aperol', 2.25], ['lime', 2.25]]],
-  ['New York Sour', 's', [['rye', 6], ['citron', 3], ['sockerlag', 2.25], ['rodvin', 1.5]]],
+  ['New York Sour', 's', [['rye', 6], ['citron', 3], ['sockerlag', 2.25], ['aggvita', 1.5], ['rodvin', 1.5]]],
   ['Old Cuban', 's', [['lagradrom', 4.5], ['lime', 2.25], ['sockerlag', 3], ['champagne', 6]]],
   ['Paloma', 'g', [['tequila', 5], ['grapelask', 10], ['lime', 0.5]]],
   ['Paper Plane', 's', [['bourbon', 3], ['nonino', 3], ['aperol', 3], ['citron', 3]]],

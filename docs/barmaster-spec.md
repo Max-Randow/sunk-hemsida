@@ -40,10 +40,15 @@ pouring them yourself.
   the shaker or the glass it goes in. Anywhere else it is spill and is lost.
 - **The shaker is picked up the same way.** Moving the mouse fast with the
   shaker in hand shakes it; after about 6000 px of fast movement (faster than 1.8 px per millisecond) it is shaken,
-  its label reads `SKAKAD!` and the layers blend into one colour. Pouring more
+  its label reads `SKAKAD!` and the layers blend into one colour. That
+  blended colour (the average of what was poured in, weighted by amount) is
+  also what pours out and what shows in the glass. Pouring more
   into the shaker resets this. Hold the button over the glass to strain, at
   4 cl per second. Click the shaker's place (or the bar) to put it back.
-- The only feedback is the level in the shaker's window and in the glass.
+- The only feedback is the level in the shaker's window and in the glass. The
+  level is linear: the glass is drawn full of ice and looks full at 22 cl, and so does the
+  shaker. Past that the label reads `FULLT!` / `FULL!`; pouring still
+  counts but the level no longer moves.
 - No undo and no timer. `SERVERA` ends the turn and shows the score, what
   ended up in the glass, the correct recipe, and what was spilled or left in
   the shaker.
@@ -52,8 +57,9 @@ pouring them yourself.
 
 - About 95 cocktails from the IBA lists plus the measured house drinks from the
   Drinkar page. Where a drink is on the Drinkar page, that page's amounts win.
-- Amounts in cl. Liquids only: bitters dashes, garnish, mint, sugar, egg and
-  water are left out. "Top up" ingredients have a fixed amount.
+- Amounts in cl. Liquids only: bitters dashes, garnish, mint, sugar, egg yolk
+  and water are left out. Egg white is a bottle of its own (Whiskey Sour,
+  Clover Club, Pisco Sour, Ramos Gin Fizz, New York Sour). "Top up" ingredients have a fixed amount.
 - Each drink has a method: `s` for shaken drinks, `g` for drinks that are
   stirred, built or blended (made directly in the glass).
 
