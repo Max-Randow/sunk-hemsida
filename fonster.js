@@ -7,6 +7,7 @@
   var MELLAN = 9000;         // ms mellan nya fönster
   var SMITCHANS = 0.7;       // hur ofta ett fönster smiter när man närmar sig [X] eller knappen
   var MAXFART = 3.5;         // normal toppfart; efter ett smit bromsar fönstret ner hit igen
+  var MAXANTAL = window.SUNK_MAXFONSTER || 0;   // en sida kan sätta ett tak (0 = inget tak)
 
   var REKLAM = [
     ['BOTTENSKRAPET', 'Smaken av en parkering.'],
@@ -25,6 +26,7 @@
   function slump(a) { return a[Math.floor(Math.random() * a.length)]; }
 
   function nytt(x0, y0) {      // x0, y0: var fönstret ska dyka upp (annars slumpas det)
+    if (MAXANTAL && fonster.length >= MAXANTAL) return;
     var r = slump(REKLAM);
     var el = document.createElement('div');
     el.className = 'fnstr';

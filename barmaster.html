@@ -1,0 +1,670 @@
+<html>
+<head>
+<meta charset="utf-8">
+<title>~*~ SUNKKOMMITTÉEN ~*~ Barmaster x9000 ~*~</title>
+<link rel="icon" href="sunk.svg">
+<link rel="stylesheet" href="sunk.css?v=11">
+<style>
+h1 { font-family: "Comic Sans MS", "Comic Sans", "Comic Neue", cursive; font-weight: bold; letter-spacing: 1px; }
+.stor { font-size: 18px; padding: 8px 22px; font-weight: bold; }
+.drinknamn { font-family: Impact, "Anton", "Arial Black", sans-serif; font-size: 30px; letter-spacing: 2px; color: #e0c020;
+             text-shadow: 2px 2px 0 #5a2d0c; line-height: 34px; }
+#namnlista { margin: 10px auto; }
+#namnlista td { font-size: 17px; }
+
+/* medan man blandar krymper sidhuvudet till en rad (logga, namn, tillbaka-länk), så att allt får plats på en skärm */
+body.spelar #rullrad { display: none; }
+body.spelar #huvudrad { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+body.spelar #huvud .logga { height: 54px; border-width: 2px; display: block; }
+body.spelar #huvud h1 { font-size: 30px; margin: 0; }
+#spel { touch-action: none; user-select: none; -webkit-user-select: none; }
+.remsa { display: flex; align-items: center; gap: 14px; padding: 0 4px 6px; }
+.remsa .titel { font-family: "Comic Sans MS", "Comic Sans", "Comic Neue", cursive; font-size: 22px; font-weight: bold; color: #e0c020;
+                text-shadow: 2px 2px 0 #5a2d0c; }
+.remsa .vem { font-size: 15px; font-weight: bold; }
+.remsa .stallning { flex-grow: 1; text-align: right; font-size: 13px; color: #c9b458; }
+.remsa .fyll { flex-grow: 1; }
+#sokruta { font-size: 12px; font-weight: bold; }
+
+/* baren: lika stora flikar och en hylla */
+#flikar { display: flex; gap: 3px; }
+.flik { flex: 1 1 0; min-width: 0; height: 30px; white-space: nowrap; overflow: hidden; font: bold 11px Arial, sans-serif; padding: 0 2px;
+        background: #a9a48c; color: #000; border: 2px outset #d6d1b8; border-bottom: 0; }
+.flik.aktiv { background: #e0c020; border-color: #f4e27a; }
+.hylla { display: flex; flex-wrap: wrap; align-content: flex-start; padding: 6px 4px 0; background: #33301f;
+         border: 2px solid #e0c020; border-bottom: 8px ridge #5a2d0c; height: 150px; box-sizing: content-box; overflow: hidden; }
+.flaska { width: 46px; text-align: center; padding: 1px 0 2px; }
+.flaska .hals { width: 7px; height: 10px; margin: 0 auto; background: var(--f); border: 1px solid #000; border-bottom: 0; border-top: 3px solid #111; }
+.flaska .kropp { width: 22px; height: 32px; margin: 0 auto; border: 1px solid #000; border-radius: 5px 5px 2px 2px;
+                 background: linear-gradient(var(--f) 34%, #f1ecd4 34%, #f1ecd4 72%, var(--f) 72%); }
+.flaska span { display: block; font-size: 9px; line-height: 10px; height: 20px; overflow: hidden; color: #c2c59a; margin-top: 2px; }
+.flaska:hover .kropp, .flaska:hover .hals { border-color: #e0c020; }
+.flaska.vald { visibility: hidden; }
+
+/* scenen: shaker, glas och serveringsknapp */
+/* scenen växer med skärmens höjd: mer luft ovanför kärlen att hälla och skaka i */
+#scen { display: flex; align-items: flex-end; justify-content: center; gap: 90px; padding: 18px 0 6px;
+        min-height: clamp(280px, 34vh, 400px); box-sizing: border-box; }
+#scen .stalle { text-align: center; }
+.karlnamn { font-size: 12px; font-weight: bold; color: #c9b458; letter-spacing: 2px; text-align: center; margin-top: 4px; height: 16px; }
+.karlnamn.klar { color: #e0c020; }
+#karl-s { height: 254px; width: 102px; }
+#karl-g { height: 192px; width: 94px; }
+#karl-s.borta { opacity: 0.2; }
+.karl.aktiv { filter: drop-shadow(0 0 8px #e0c020); }
+/* shakern lyser när man pekar på den med tom hand, så att det syns att den går att lyfta */
+body:not(.harhand) #karl-s:hover { filter: drop-shadow(0 0 10px #e0c020) brightness(1.15); }
+
+/* det man håller i handen */
+#hand { position: fixed; left: 0; top: 0; z-index: 9400; pointer-events: none; display: none; }
+#hand > * { transition: transform 0.07s; }
+#hand .flaska { margin: -40px 0 0 -23px; transform: scale(1.9); transform-origin: 50% 55%; }
+#hand.lutar .flaska { transform: scale(1.9) rotate(-115deg); }
+#hand .flaska span { display: none; }
+#hand svg { display: block; }
+#hand.lutar svg { transform: rotate(-105deg); }
+#strale { position: fixed; z-index: 9300; width: 5px; pointer-events: none; display: none; border-radius: 3px; }
+
+#utslag { margin: 10px auto; }
+#utslag td { font-size: 15px; }
+.vinst { font-family: "Comic Sans MS", "Comic Sans", "Comic Neue", cursive; font-size: 46px; font-weight: bold; color: #ffe600;
+         background: #e00000; padding: 6px 18px; display: inline-block; animation: vinst 0.6s steps(1) infinite; }
+@keyframes vinst { 50% { color: #e00000; background: #ffe600; } }
+</style>
+</head>
+<body bgcolor="#1e1e1c" text="#c2c59a" link="#e0c020" vlink="#8f8454">
+<center>
+<table width="780" border="4" cellpadding="6" cellspacing="0" bordercolor="#a8501a" bgcolor="#23241f">
+<tr id="huvud"><td align="center" bgcolor="#2f3b26">
+  <div id="huvudrad">
+  <a href="index.html"><img src="sunk.svg#svgView(viewBox(170,220,720,1010))" class="logga" height="130" border="0" alt="Sunkkommittéen"></a>
+  <h1>BARMASTER x9000</h1>
+  <a href="index.html">&laquo; Tillbaka till startsidan</a>
+  </div>
+</td></tr>
+<tr id="rullrad"><td bgcolor="#5a2d0c">
+  <div class="rull"><span style="animation-duration: 40s"><font color="#e0c020" size="4"><b>+++ BARMASTER x9000: NU MED 9000 % MER BAR +++ INGEN UTBILDNING KRÄVS, OCH DET MÄRKS +++ SPILL RÄKNAS SOM DRICKS TILL GOLVET +++ KOMMITTÉN HAR ALDRIG MÄTT NÅGOT I HELA SITT LIV +++ SKAKA SOM OM HYRAN HÄNGER PÅ DET +++ DIPLOM UTDELAS EJ +++ GODKÄND AV 0 AV 10 BARTENDERS +++ MÄT MED HJÄRTAT, SKYLL PÅ MUSEN +++</b></font></span></div>
+</td></tr>
+
+<!-- 1: skriv in spelare -->
+<tr id="start"><td align="center">
+  <h2>Vilka ska stå i baren?</h2>
+  <input type="text" id="nyttnamn" maxlength="20" size="20">
+  <button class="btn" onclick="laggTill()">LÄGG TILL</button>
+  <table id="namnlista" border="1" cellpadding="5" bordercolor="#c9b458"></table>
+  <label><input type="checkbox" id="noob" onclick="bytNoob()"> <b>Big noob mode</b></label>
+  <br><br>
+  <button class="btn stor" id="starta" onclick="starta()">STARTA</button>
+  <br><br>
+  <div id="solorekord"></div>
+</td></tr>
+
+<!-- 2: baren -->
+<tr id="spel" style="display:none"><td>
+  <div class="remsa">
+    <span class="vem" id="spel-vem"></span>
+    <span class="stallning" id="spel-stallning"></span>
+  </div>
+  <div class="remsa">
+    <span class="drinknamn" id="spel-drink"></span>
+    <span class="fyll"></span>
+    <input type="text" id="sok" size="18" placeholder="Sök" aria-label="Sök i baren" oninput="sok()" autocomplete="off">
+  </div>
+  <div class="remsa" id="noobrad" style="display:none">
+    <b id="noob-lista"></b>
+  </div>
+  <div id="bar">
+    <div id="flikar"></div>
+    <div id="hyllor"></div>
+  </div>
+  <div id="scen">
+    <div class="stalle">
+      <svg id="karl-s" class="karl" viewBox="56 14 128 318" role="img" aria-label="Shaker">
+        <rect x="98" y="24" width="44" height="30" rx="7" fill="#c4cace" stroke="#111" stroke-width="3"/>
+        <path d="M84 96 Q84 56 120 54 Q156 56 156 96 Z" fill="#aab1b6" stroke="#111" stroke-width="3"/>
+        <path d="M66 96 L174 96 L160 312 Q120 326 80 312 Z" fill="#9aa0a4" stroke="#111" stroke-width="3"/>
+        <path d="M76 100 L90 100 L98 310 L88 308 Z" fill="#eef2f4" opacity="0.75"/>
+        <path d="M150 100 L166 100 L154 308 L144 312 Z" fill="#5c6166"/>
+        <rect x="66" y="92" width="108" height="10" fill="#6d7378" stroke="#111" stroke-width="3"/>
+        <rect x="108" y="122" width="24" height="176" rx="6" fill="#141412" stroke="#111" stroke-width="3"/>
+        <g class="lager-s"></g>
+      </svg>
+      <div class="karlnamn" id="namn-s">SHAKER</div>
+    </div>
+    <div class="stalle">
+      <svg id="karl-g" class="karl" viewBox="226 86 118 240" role="img" aria-label="Glas">
+        <defs><clipPath id="glasform"><path d="M239 98 L331 98 L320 313 L250 313 Z"/></clipPath></defs>
+        <path d="M236 96 L334 96 L322 316 L248 316 Z" fill="#3a3d39" stroke="#cfd8dc" stroke-width="3"/>
+        <g class="lager-g" clip-path="url(#glasform)"></g>
+        <path d="M246 104 L256 104 L264 306 L256 306 Z" fill="#ffffff" opacity="0.25"/>
+      </svg>
+      <div class="karlnamn">GLAS</div>
+    </div>
+    <div class="stalle" style="align-self: center">
+      <button class="btn stor" onclick="servera()">SERVERA</button>
+    </div>
+  </div>
+</td></tr>
+
+<!-- 3: domen efter en drink -->
+<tr id="resultat" style="display:none"><td align="center">
+  <font size="4"><b id="res-vem"></b></font><br>
+  <div class="drinknamn" id="res-drink"></div>
+  <table id="utslag" border="1" cellpadding="5" bordercolor="#c9b458"></table>
+  <font size="2" color="#c9b458" id="res-svinn"></font><br>
+  <font size="5"><b>Poäng: <span class="counter" id="res-poang">0</span> av 100</b></font><br>
+  <font size="4" color="#e0c020"><b id="res-dom"></b></font><br><br>
+  <div id="res-stallning"></div><br>
+  <button class="btn stor" id="nasta" onclick="nasta()">NÄSTA</button>
+  <br><br>
+</td></tr>
+
+<!-- 4: slutet -->
+<tr id="slut" style="display:none"><td align="center">
+  <br><div class="vinst" id="vinnare"></div><br><br>
+  <table id="sluttabell" border="1" cellpadding="6" bordercolor="#c9b458"></table>
+  <div id="slut-rekord"></div><br>
+  <button class="btn stor" onclick="starta()">SPELA IGEN</button>
+  &nbsp;&nbsp;
+  <button class="btn stor" onclick="nyaNamn()">NYA NAMN</button>
+  <br><br>
+</td></tr>
+
+<tr><td align="center" bgcolor="#2f3b26">
+  <font size="2" color="#c9b458"><a href="index.html">[ Tillbaka till startsidan ]</a> &nbsp; &copy; 1997 Sunkkommittéen<br><span class="blink"><font color="#d0281e" size="3"><b>Rökning dödar.</b></font></span></font>
+</td></tr>
+</table>
+</center>
+
+<div id="hand"></div>
+<div id="strale"></div>
+
+<script src="cocktails.js?v=11"></script>
+<script>
+// Barmaster x9000. Regler och poängformel står i docs/barmaster-spec.md.
+var RUNDOR = 5;          // drinkar per spelare
+var FART = 2;            // cl per sekund ur en flaska
+var SILFART = 4;         // cl per sekund ur shakern
+var DROPP = 0.2;         // mindre än så här räknas som spill och struntas i
+var TVEKAN = 150;        // ms flaskan lutar innan det börjar rinna
+var SKAKMAL = 6000;      // px snabb musrörelse som krävs för att shakern ska vara skakad
+var SKAKFART = 1.8;      // px per ms: långsammare än så räknas inte som att skaka
+
+var namn = [], poang = [], tur = 0, kortlek = [], drink = null;
+var shaker = {}, glas = {};          // innehåll, { flaska: cl }
+var skak = 0;                        // px skakat sedan något senast hälldes i shakern
+var viaShaker = 0, viaSkakad = 0;    // cl som kom till glaset ur shakern (och hur mycket av det som var skakat)
+var spill = 0;                       // cl som hamnade utanför
+var noob = minne0('sunk_bm_noob') == '1';   // Big noob mode: ingredienserna visas (utan mängder)
+function minne0(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+function rekordnyckel() { return noob ? 'sunk_bm_rekord_noob' : 'sunk_bm_rekord'; }
+
+function el(id) { return document.getElementById(id); }
+function minne(k, v) {
+  try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) {}
+  return null;
+}
+function cl(x) { return (Math.round(x * 100) / 100).toString().replace('.', ',') + ' cl'; }
+function cl1(x) { return x.toFixed(1).replace('.', ',') + ' cl'; }
+function visa(vy) {
+  ['start', 'spel', 'resultat', 'slut'].forEach(function (v) { el(v).style.display = v == vy ? '' : 'none'; });
+  document.body.classList.toggle('spelar', vy == 'spel');
+  window.scrollTo(0, 0);
+}
+function rad(tabell, celler, fet) {
+  var tr = tabell.insertRow();
+  celler.forEach(function (c, i) {
+    var td = tr.insertCell();
+    td.textContent = c;
+    if (i > 0) td.align = 'right';
+    if (fet) td.style.fontWeight = 'bold';
+  });
+  return tr;
+}
+
+// ---------- spelare ----------
+function ritaNamn() {
+  var t = el('namnlista');
+  t.innerHTML = '';
+  namn.forEach(function (n, i) {
+    var tr = rad(t, [(i + 1) + '.', n]);
+    var knapp = document.createElement('button');
+    knapp.className = 'btn'; knapp.textContent = 'TA BORT';
+    knapp.onclick = function () { namn.splice(i, 1); ritaNamn(); };
+    tr.insertCell().appendChild(knapp);
+  });
+  t.style.display = namn.length ? '' : 'none';
+  el('starta').disabled = !namn.length;
+  minne('sunk_bm_namn', JSON.stringify(namn));
+  el('noob').checked = noob;
+  var rekord = parseInt(minne(rekordnyckel()) || '0', 10);
+  el('solorekord').textContent = rekord ? 'Solorekord' + (noob ? ' (noob)' : '') + ': ' + rekord + ' av ' + RUNDOR * 100 : '';
+}
+function bytNoob() {
+  noob = el('noob').checked;
+  minne('sunk_bm_noob', noob ? '1' : '0');
+  ritaNamn();
+}
+function laggTill() {
+  var n = el('nyttnamn').value.trim();
+  if (!n || namn.length >= 20) return;
+  namn.push(n);
+  el('nyttnamn').value = '';
+  el('nyttnamn').focus();
+  ritaNamn();
+}
+el('nyttnamn').addEventListener('keydown', function (e) { if (e.key == 'Enter') laggTill(); });
+function nyaNamn() { visa('start'); ritaNamn(); }
+
+// ---------- baren: en flik per hylla, plus en hylla för sökträffar ----------
+var hyllor = {}, flikar = {}, aktivFlik = null;
+function flaskEl(id) {
+  var d = document.createElement('div');
+  d.className = 'flaska';
+  d.setAttribute('data-id', id);
+  d.style.setProperty('--f', FLASKOR[id][1]);
+  d.innerHTML = '<div class="hals"></div><div class="kropp"></div><span></span>';
+  d.lastChild.textContent = FLASKOR[id][0];
+  return d;
+}
+function nyHylla() {
+  var h = document.createElement('div');
+  h.className = 'hylla'; h.style.display = 'none';
+  el('hyllor').appendChild(h);
+  return h;
+}
+function byggBar() {
+  for (var id in FLASKOR) {
+    var h = FLASKOR[id][2];
+    if (!hyllor[h]) {
+      hyllor[h] = nyHylla();
+      var f = document.createElement('button');
+      f.className = 'flik'; f.textContent = h.toUpperCase();
+      f.onclick = (function (h) { return function () { el('sok').value = ''; valjFlik(h); }; })(h);
+      el('flikar').appendChild(f);
+      flikar[h] = f;
+      if (!aktivFlik) aktivFlik = h;
+    }
+    hyllor[h].appendChild(flaskEl(id));
+  }
+  hyllor.sok = nyHylla();
+  valjFlik(aktivFlik);
+}
+function valjFlik(h) {
+  aktivFlik = h;
+  var soker = !!el('sok').value.trim();
+  for (var k in hyllor) hyllor[k].style.display = (soker ? k == 'sok' : k == h) ? '' : 'none';
+  for (var k in flikar) flikar[k].classList.toggle('aktiv', !soker && k == h);
+}
+// sökningen struntar i stora bokstäver och prickar: "cachaca" hittar Cachaça
+function enkel(s) { return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); }
+function sok() {
+  var q = enkel(el('sok').value.trim());
+  var h = hyllor.sok;
+  h.innerHTML = '';
+  if (q) {
+    for (var id in FLASKOR) if (enkel(FLASKOR[id][0]).indexOf(q) >= 0) {
+      var f = flaskEl(id);
+      if (hand && hand.id == id) f.classList.add('vald');
+      h.appendChild(f);
+    }
+    if (!h.children.length) h.textContent = 'Finns inte i baren.';
+  }
+  valjFlik(aktivFlik);
+}
+
+// ---------- kärlen ----------
+function summa(inne) { var s = 0; for (var id in inne) s += inne[id]; return s; }
+function skakad() { return skak >= SKAKMAL && summa(shaker) >= DROPP; }
+// medelfärgen av det som är i shakern: så ser den ut när den är skakad
+function blandfarg(inne) {
+  var r = 0, g = 0, b = 0, tot = summa(inne) || 1;
+  for (var id in inne) {
+    var n = parseInt(FLASKOR[id][1].slice(1), 16), v = inne[id] / tot;
+    r += (n >> 16) * v; g += ((n >> 8) & 255) * v; b += (n & 255) * v;
+  }
+  return 'rgb(' + Math.round(r) + ',' + Math.round(g) + ',' + Math.round(b) + ')';
+}
+function ritaKarl(k) {
+  var inne = k == 's' ? shaker : glas, tot = summa(inne);
+  var maxh = k == 's' ? 170 : 205, y = k == 's' ? 295 : 313, x = k == 's' ? 111 : 236, w = k == 's' ? 18 : 98;
+  // nivån stiger snabbt i början och planar ut, så att både 3 cl och 54 cl får plats
+  var hojd = maxh * (1 - Math.exp(-tot / 18)), svg = '';
+  function lager(h, farg) { y -= h; svg += '<rect x="' + x + '" y="' + y.toFixed(1) + '" width="' + w + '" height="' + (h + 0.5).toFixed(1) + '" fill="' + farg + '"/>'; }
+  if (tot > 0) {
+    if (k == 's' && skakad()) lager(hojd, blandfarg(inne));
+    else for (var id in inne) lager(hojd * inne[id] / tot, FLASKOR[id][1]);
+  }
+  var gg = document.querySelectorAll('.lager-' + k);
+  for (var i = 0; i < gg.length; i++) gg[i].innerHTML = svg;
+  if (k == 's') {
+    el('namn-s').textContent = skakad() ? 'SKAKAD!' : 'SHAKER';
+    el('namn-s').classList.toggle('klar', skakad());
+  }
+}
+
+// ---------- handen: ta, häll, ställ tillbaka ----------
+// hand = { typ: 'flaska' | 'shaker', id, x, y, haller, zon, zonTid }
+var hand = null, forra = 0;
+// Fem hälljud ur samma klipp som GT-knappen på startsidan (se CREDITS.txt).
+// Kolsyrat får de två bubbliga, allt annat de tre stilla. Ett slumpas per flaska.
+var BUBBLIGT = ['champagne', 'prosecco', 'soda', 'tonic', 'cola', 'gingerale', 'gingerbeer', 'grapelask', 'monster', 'energi'];
+function ljudfil(f) { var a = new Audio('ljud/' + f + '.mp3'); a.loop = true; a.volume = 0.6; return a; }
+var LJUD = { bubbel: ['bubbel1', 'bubbel2'].map(ljudfil), stilla: ['stilla1', 'stilla2', 'stilla3'].map(ljudfil) };
+var hallLjud = LJUD.stilla[0];
+
+function markera(id, pa) {
+  var ff = el('hyllor').querySelectorAll('.flaska[data-id="' + id + '"]');
+  for (var i = 0; i < ff.length; i++) ff[i].classList.toggle('vald', pa);
+}
+function ta(typ, id, e) {
+  hand = { typ: typ, id: id, x: e.clientX, y: e.clientY, haller: false, zon: null, zonTid: 0 };
+  var h = el('hand');
+  h.innerHTML = ''; h.className = '';
+  var farg;
+  if (typ == 'flaska') {
+    h.appendChild(flaskEl(id));
+    markera(id, true);
+    farg = FLASKOR[id][1];
+    var sort = LJUD[BUBBLIGT.indexOf(id) >= 0 ? 'bubbel' : 'stilla'];
+    hallLjud = sort[Math.floor(Math.random() * sort.length)];
+  } else {
+    var kopia = el('karl-s').cloneNode(true);
+    kopia.removeAttribute('id'); kopia.setAttribute('class', '');
+    // samma storlek som den som står på disken, hållen i mitten
+    var r = el('karl-s').getBoundingClientRect();
+    kopia.style.width = r.width + 'px'; kopia.style.height = r.height + 'px';
+    kopia.style.margin = (-r.height / 2) + 'px 0 0 ' + (-r.width / 2) + 'px';
+    hand.pip = r.height * 0.49;
+    h.appendChild(kopia);
+    el('karl-s').classList.add('borta');
+    hallLjud = LJUD.stilla[2];
+  }
+  hallLjud.currentTime = 0;
+  h.style.display = 'block';
+  document.body.classList.add('harhand');
+  forra = performance.now();
+  requestAnimationFrame(loop);
+}
+function stallTillbaka() {
+  if (!hand) return;
+  if (hand.typ == 'flaska') markera(hand.id, false);
+  else el('karl-s').classList.remove('borta');
+  hand = null;
+  document.body.classList.remove('harhand');
+  el('hand').style.display = 'none';
+  el('strale').style.display = 'none';
+  el('karl-s').classList.remove('aktiv'); el('karl-g').classList.remove('aktiv');
+  hallLjud.pause(); skakLjud.pause();
+}
+function inom(elem, x, y) {
+  var r = elem.getBoundingClientRect();
+  return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
+}
+document.addEventListener('pointerdown', function (e) {
+  if (el('spel').style.display == 'none') return;
+  if (e.pointerType == 'mouse' && e.button != 0) return;
+  var t = e.target.closest ? e.target : document.body;
+  if (t.closest('button, input, a, .fnstr, #musik-knapp')) return;     // knappar ska gå att trycka på
+  if (!hand) {
+    var f = t.closest('#hyllor .flaska');
+    if (f) { e.preventDefault(); ta('flaska', f.getAttribute('data-id'), e); }
+    else if (t.closest('#karl-s')) { e.preventDefault(); ta('shaker', null, e); }
+    return;
+  }
+  e.preventDefault();
+  hand.x = e.clientX; hand.y = e.clientY;
+  // ett klick på hyllan (eller på shakerns plats) ställer tillbaka, annars häller man
+  if (inom(el('bar'), e.clientX, e.clientY) || (hand.typ == 'shaker' && inom(el('karl-s'), e.clientX, e.clientY))) stallTillbaka();
+  else hand.haller = true;
+});
+window.addEventListener('pointermove', function (e) {
+  if (!hand) return;
+  var dx = e.clientX - hand.x, dy = e.clientY - hand.y;
+  hand.x = e.clientX; hand.y = e.clientY;
+  // att ruska musen med shakern i handen skakar den
+  if (hand.typ == 'shaker' && !hand.haller) {
+    var nu = performance.now(), dt = Math.max(1, nu - (hand.rorTid || nu)), d = Math.sqrt(dx * dx + dy * dy);
+    hand.rorTid = nu;
+    if (d / dt > SKAKFART) {
+      // shakern slänger med åt det håll man rycker, och det skvalpar så länge man håller på
+      hand.vinkel = Math.max(-65, Math.min(65, dx * 2.4 + dy * 1.2));
+      hand.kast = Math.max(-26, Math.min(26, dx * 0.5));     // slänger iväg lite extra i sidled
+      skramla();
+      if (summa(shaker) >= DROPP) {
+        var var_ = skakad();
+        skak += d;
+        if (skakad() != var_) { ritaKarl('s'); }
+      }
+    }
+  }
+});
+
+// Skakljudet är en slinga som spelar så länge man ruskar (se CREDITS.txt).
+var skakLjud = new Audio('ljud/skaka.mp3');
+skakLjud.loop = true; skakLjud.volume = 0.8;
+var skakStopp = null;
+function skramla() {
+  if (skakLjud.paused) { var p = skakLjud.play(); if (p && p.catch) p.catch(function () {}); }
+  clearTimeout(skakStopp);
+  skakStopp = setTimeout(function () { skakLjud.pause(); }, 200);     // tystnar strax efter att man slutar ruska
+}
+function slutaHalla() { if (hand) hand.haller = false; }
+window.addEventListener('pointerup', slutaHalla);
+window.addEventListener('pointercancel', slutaHalla);
+window.addEventListener('blur', slutaHalla);
+
+// vilket kärl pipen är över (eller null). En shaker i handen kan bara hälla i glaset.
+function zonVid(mx, y) {
+  var kk = hand.typ == 'shaker' ? ['g'] : ['s', 'g'];
+  for (var i = 0; i < kk.length; i++) {
+    var r = el('karl-' + kk[i]).getBoundingClientRect();
+    if (mx > r.left - 30 && mx < r.right + 10 && y < r.bottom && y > r.top - 260) return kk[i];
+  }
+  return null;
+}
+function loop(nu) {
+  if (!hand) return;
+  var dt = Math.min(100, nu - forra); forra = nu;
+  var h = el('hand'), strale = el('strale');
+  h.style.transform = 'translate(' + hand.x + 'px,' + hand.y + 'px)';
+  var mx = hand.x - (hand.typ == 'shaker' ? hand.pip : 44);       // var pipen hamnar när man lutar
+  var zon = hand.haller ? zonVid(mx, hand.y) : null;
+  if (!hand.haller) hand.zonTid = nu;
+  el('karl-s').classList.toggle('aktiv', zon == 's');
+  el('karl-g').classList.toggle('aktiv', zon == 'g');
+  h.className = hand.haller ? 'lutar' : '';
+  if (hand.typ == 'shaker') {
+    // vinkeln från skakningen klingar av; när man häller tar lutningen i CSS över
+    var dampa = Math.pow(0.86, dt / 16.7);
+    hand.vinkel = (hand.vinkel || 0) * dampa; hand.kast = (hand.kast || 0) * dampa;
+    h.firstChild.style.transform = hand.haller ? '' : 'translateX(' + hand.kast.toFixed(1) + 'px) rotate(' + hand.vinkel.toFixed(1) + 'deg)';
+  }
+  var rinner = hand.haller && nu - hand.zonTid > TVEKAN;
+  var farg = hand.typ == 'flaska' ? FLASKOR[hand.id][1] : blandfarg(shaker);
+  if (rinner && hand.typ == 'flaska') {
+    var m = FART * dt / 1000;
+    if (zon == 's') { shaker[hand.id] = (shaker[hand.id] || 0) + m; skak = 0; ritaKarl('s'); }
+    else if (zon == 'g') { glas[hand.id] = (glas[hand.id] || 0) + m; ritaKarl('g'); }
+    else spill += m;
+  } else if (rinner) {
+    var tot = summa(shaker), m = Math.min(tot, SILFART * dt / 1000);
+    if (tot <= 0) rinner = false;
+    else {
+      var del = m / tot, var_ = skakad();
+      for (var id in shaker) {
+        var c = shaker[id] * del;
+        shaker[id] -= c;
+        if (zon == 'g') glas[id] = (glas[id] || 0) + c;
+      }
+      if (zon == 'g') { viaShaker += m; if (var_) viaSkakad += m; ritaKarl('g'); } else spill += m;
+      if (summa(shaker) < 0.001) { shaker = {}; skak = 0; }
+      ritaKarl('s');
+    }
+  }
+  if (rinner) {
+    var topp = hand.y + 6, botten = innerHeight, sx = mx;
+    if (zon) {
+      var r = el('karl-' + zon).getBoundingClientRect();
+      sx = Math.min(Math.max(mx, r.left + 12), r.right - 16);
+      botten = r.bottom - 8;
+    }
+    strale.style.background = farg;
+    strale.style.left = sx + 'px';
+    strale.style.top = topp + 'px';
+    strale.style.height = Math.max(0, botten - topp) + 'px';
+    strale.style.display = 'block';
+    if (hallLjud.paused) { var p = hallLjud.play(); if (p && p.catch) p.catch(function () {}); }
+  } else {
+    strale.style.display = 'none';
+    if (!hallLjud.paused) hallLjud.pause();
+  }
+  requestAnimationFrame(loop);
+}
+
+// ---------- poäng ----------
+// d = cocktail, s = { glas, viaShaker, viaSkakad }. Bara det som är i glaset räknas.
+// Ger { rader: [[text, receptet, hällt, poäng], ...], metod: [...], total }
+function raknaPoang(d, s) {
+  var recept = d[2], andel = 85 / recept.length, sum = 0, rader = [], tot = {};
+  for (var id in s.glas) if (s.glas[id] >= DROPP) tot[id] = s.glas[id];
+  function traff(fick, ville) { return Math.max(0, 1 - Math.abs(fick - ville) / ville); }
+
+  var saknas = [];
+  recept.forEach(function (r) {
+    if (tot[r[0]] === undefined) { saknas.push(r); return; }
+    var p = andel * traff(tot[r[0]], r[1]);
+    sum += p;
+    rader.push([FLASKOR[r[0]][0], cl(r[1]), cl1(tot[r[0]]), p]);
+    delete tot[r[0]];
+  });
+  // fel flaska men rätt mängd: para ihop det som saknas med det som blev över, bästa träff först
+  var over = Object.keys(tot);
+  while (saknas.length && over.length) {
+    var bast = null;
+    saknas.forEach(function (r, i) {
+      over.forEach(function (id, j) {
+        var t = traff(tot[id], r[1]);
+        if (t > 0 && (!bast || t > bast.t)) bast = { t: t, i: i, j: j };
+      });
+    });
+    if (!bast) break;
+    var r = saknas.splice(bast.i, 1)[0], id = over.splice(bast.j, 1)[0];
+    var p = andel * bast.t * 0.5;
+    sum += p;
+    rader.push([FLASKOR[r[0]][0] + ' (du tog ' + FLASKOR[id][0] + ')', cl(r[1]), cl1(tot[id]), p]);
+  }
+  saknas.forEach(function (r) { rader.push([FLASKOR[r[0]][0], cl(r[1]), 'ingenting', 0]); });
+  over.forEach(function (id) { sum -= 5; rader.push([FLASKOR[id][0] + ' (hör inte hit)', '-', cl1(tot[id]), -5]); });
+
+  // metod: skakade drinkar ska ha gått genom en skakad shaker, övriga ska byggas direkt i glaset
+  var oskakat = s.viaShaker - s.viaSkakad;
+  var fick = s.viaShaker < DROPP ? 'byggd i glaset' : oskakat >= DROPP ? 'oskakad ur shakern' : 'skakad';
+  var ville = d[1] == 's' ? 'skakad' : 'byggd i glaset';
+  var ratt = fick == ville && Object.keys(s.glas).length > 0;
+  if (ratt) sum += 15;
+  return { rader: rader, metod: ['Metod', ville, fick, ratt ? 15 : 0],
+           total: Math.min(100, Math.max(0, Math.round(sum))) };
+}
+function dom(p) {
+  if (p >= 90) return 'Barmaster. Du får jobba här.';
+  if (p >= 70) return 'Godkänt. Drickbart.';
+  if (p >= 40) return 'Det där är en annan drink.';
+  if (p > 0) return 'Häll ut det där.';
+  return 'Noll. Kommittén skäms.';
+}
+
+// ---------- spelets gång ----------
+function blanda(a) {
+  for (var i = a.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+function stallning() {
+  return namn.map(function (n, i) { return n + ': ' + poang[i]; }).join('  |  ');
+}
+function starta() {
+  if (!namn.length) return;
+  poang = namn.map(function () { return 0; });
+  tur = 0;
+  kortlek = blanda(COCKTAILS.slice());
+  nyTur();
+}
+function nyTur() {
+  if (!kortlek.length) kortlek = blanda(COCKTAILS.slice());
+  drink = kortlek.pop();
+  shaker = {}; glas = {}; skak = 0; viaShaker = 0; viaSkakad = 0; spill = 0;
+  ritaKarl('s'); ritaKarl('g');
+  var vem = namn[tur % namn.length], nr = Math.floor(tur / namn.length) + 1;
+  el('spel-vem').textContent = vem + ' (drink ' + nr + ' av ' + RUNDOR + ')';
+  el('spel-drink').textContent = drink[0];
+  el('noobrad').style.display = noob ? '' : 'none';
+  el('noob-lista').textContent = drink[2].map(function (r) { return FLASKOR[r[0]][0]; }).join(', ');
+  el('spel-stallning').textContent = stallning();
+  el('sok').value = ''; sok();
+  visa('spel');
+}
+function servera() {
+  stallTillbaka();
+  var res = raknaPoang(drink, { glas: glas, viaShaker: viaShaker, viaSkakad: viaSkakad });
+  var i = tur % namn.length;
+  poang[i] += res.total;
+  el('res-vem').textContent = namn[i] + ' serverade en';
+  el('res-drink').textContent = drink[0];
+  var t = el('utslag');
+  t.innerHTML = '';
+  rad(t, ['', 'Receptet', 'I glaset', 'Poäng'], true).bgColor = '#2f3b26';
+  res.rader.concat([res.metod]).forEach(function (r) {
+    rad(t, [r[0], r[1], r[2], r[3].toFixed(1).replace('.', ',')]);
+  });
+  var svinn = [], kvar = summa(shaker);
+  if (kvar >= DROPP) svinn.push('Kvar i shakern: ' + cl1(kvar));
+  if (spill >= DROPP) svinn.push('Spillt: ' + cl1(spill));
+  el('res-svinn').textContent = svinn.join('  |  ');
+  el('res-poang').textContent = res.total;
+  el('res-dom').textContent = dom(res.total);
+  el('res-stallning').textContent = stallning();
+  tur++;
+  var slut = tur >= namn.length * RUNDOR;
+  el('nasta').textContent = slut ? 'SE VEM SOM VANN' : 'NÄSTA: ' + namn[tur % namn.length];
+  visa('resultat');
+}
+function nasta() {
+  if (tur >= namn.length * RUNDOR) visaSlut(); else nyTur();
+}
+function visaSlut() {
+  var bast = Math.max.apply(null, poang);
+  var vinnare = namn.filter(function (n, i) { return poang[i] == bast; });
+  var text = vinnare.length > 1
+    ? vinnare.slice(0, -1).join(', ') + ' och ' + vinnare[vinnare.length - 1]
+    : vinnare[0];
+  el('vinnare').textContent = text + ' har vunnit';
+  var t = el('sluttabell');
+  t.innerHTML = '';
+  rad(t, ['Spelare', 'Poäng av ' + RUNDOR * 100], true).bgColor = '#2f3b26';
+  namn.map(function (n, i) { return [n, poang[i]]; })
+      .sort(function (a, b) { return b[1] - a[1]; })
+      .forEach(function (r) { rad(t, r); });
+  var rek = '';
+  if (namn.length == 1) {
+    var gammalt = parseInt(minne(rekordnyckel()) || '0', 10), sort = noob ? ' (noob)' : '';
+    if (poang[0] > gammalt) { minne(rekordnyckel(), poang[0]); rek = 'NYTT SOLOREKORD' + sort.toUpperCase() + '!'; }
+    else rek = 'Solorekord' + sort + ': ' + gammalt;
+  }
+  el('slut-rekord').textContent = rek;
+  visa('slut');
+}
+
+byggBar();
+try { namn = JSON.parse(minne('sunk_bm_namn') || '[]'); } catch (e) { namn = []; }
+if (!Array.isArray(namn)) namn = [];
+namn = namn.filter(function (n) { return typeof n == 'string' && n; }).slice(0, 20);
+ritaNamn();
+</script>
+<script>var SUNK_MAXFONSTER = 1;   // högst ett annonsfönster på den här sidan</script>
+<script src="radio.js?v=11"></script>
+<script src="fonster.js?v=11"></script>
+<script src="ciggy.js?v=11"></script>
+</body>
+</html>

@@ -5,5 +5,13 @@ hall-upp.mp3
   https://www.youtube.com/watch?v=fxkVGyQWpZc
   Licens: Creative Commons Attribution (CC BY). Klippt till de första 6 sekunderna.
 
+ljud/bubbel1.mp3, bubbel2.mp3, stilla1.mp3, stilla2.mp3, stilla3.mp3 (Barmaster x9000)
+  Samma klipp och licens som ovan, uppdelat i sina fem ljud.
+
+ljud/skaka.mp3 (Barmaster x9000)
+  "Shaking Liquid | HQ Sound Effects" av Everyday Cinematic Sounds
+  https://www.youtube.com/watch?v=fH66yeR41Yo
+  Fritt att använda mot att kanalen nämns. Klippt till 6 sekunder och förstärkt.
+
 drinks.js
   Dryckesdata från https://alkolist.github.io/ (Systembolagets sortiment)
