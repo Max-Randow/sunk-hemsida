@@ -134,24 +134,7 @@ body:not(.harhand) #karl-s:hover { filter: drop-shadow(0 0 10px #e0c020) brightn
       <div class="karlnamn" id="namn-s">SHAKER</div>
     </div>
     <div class="stalle">
-      <svg id="karl-g" class="karl" viewBox="226 86 118 240" role="img" aria-label="Glas">
-        <defs><clipPath id="glasform"><path d="M239 98 L331 98 L320 313 L250 313 Z"/></clipPath></defs>
-        <path d="M236 96 L334 96 L322 316 L248 316 Z" fill="#3a3d39" stroke="#cfd8dc" stroke-width="3"/>
-        <g class="lager-g" clip-path="url(#glasform)"></g>
-        <!-- is: tar plats, så glaset fylls fortare -->
-        <g clip-path="url(#glasform)" fill="#e9f3f6" fill-opacity="0.42" stroke="#b9cdd4" stroke-width="2">
-          <rect x="253" y="277" width="33" height="33" rx="4" transform="rotate(-7 269 293)"/>
-          <rect x="287" y="279" width="31" height="31" rx="4" transform="rotate(11 302 294)"/>
-          <rect x="260" y="241" width="33" height="33" rx="4" transform="rotate(16 276 257)"/>
-          <rect x="293" y="244" width="30" height="30" rx="4" transform="rotate(-12 308 259)"/>
-          <rect x="250" y="205" width="32" height="32" rx="4" transform="rotate(-15 266 221)"/>
-          <rect x="288" y="208" width="33" height="33" rx="4" transform="rotate(7 304 224)"/>
-          <rect x="266" y="170" width="33" height="33" rx="4" transform="rotate(22 282 186)"/>
-          <rect x="296" y="174" width="28" height="28" rx="4" transform="rotate(-20 310 188)"/>
-          <rect x="246" y="168" width="26" height="26" rx="4" transform="rotate(10 259 181)"/>
-        </g>
-        <path d="M246 104 L256 104 L264 306 L256 306 Z" fill="#ffffff" opacity="0.25"/>
-      </svg>
+      <svg id="karl-g" class="karl" viewBox="226 86 118 240" role="img" aria-label="Glas"></svg>
       <div class="karlnamn" id="namn-g">GLAS</div>
     </div>
     <div class="stalle" style="align-self: center">
@@ -193,13 +176,62 @@ body:not(.harhand) #karl-s:hover { filter: drop-shadow(0 0 10px #e0c020) brightn
 <div id="hand"></div>
 <div id="strale"></div>
 
-<script src="cocktails.js?v=12"></script>
+<script src="cocktails.js?v=13"></script>
 <script>
 // Barmaster x9000. Regler och poängformel står i docs/barmaster-spec.md.
 var RUNDOR = 5;          // drinkar per spelare
 var FART = 2;            // cl per sekund ur en flaska
 var SILFART = 4;         // cl per sekund ur shakern
-var RYMD = { s: 22, g: 22 };   // cl som får plats innan kärlet ser fullt ut (glaset är fullt av is, shakern likaså)
+var RYMD = { s: 22 };          // cl som får plats i shakern innan den ser full ut (glasens mått står i GLAS)
+
+// Glasen. Varje drink serveras i sitt eget slags glas (GLASTYP i cocktails.js), vilket också
+// avslöjar ungefär hur stor drinken är. Allt ritas i samma ruta: viewBox 226 86 118 240.
+//   rymd = cl när glaset ser fullt ut, form = insidan (vätskan klipps mot den),
+//   y = vätskans botten, h = höjd på vätskan när det är fullt, is = [x, y, storlek, vridning]
+var KANT = 'stroke="#cfd8dc" stroke-width="3"', KROPP = 'fill="#3a3d39" ' + KANT;
+var FOT = '<ellipse cx="285" cy="310" rx="34" ry="6" ' + KROPP + '/>';
+var GLAS = {
+  sh: { namn: 'SHOTGLAS', rymd: 6.5, y: 306, h: 52, form: 'M263 252 L307 252 L302 306 L268 306 Z',
+        kontur: '<path d="M260 250 L310 250 L303 316 L267 316 Z" ' + KROPP + '/>',
+        glans: 'M267 255 L272 255 L274 302 L270 302 Z' },
+  ck: { namn: 'COCKTAILGLAS', rymd: 14, y: 225, h: 70, form: 'M236 153 L334 153 L285 225 Z',
+        kontur: '<rect x="283" y="226" width="4" height="82" fill="#cfd8dc"/>' + FOT + '<path d="M230 150 L340 150 L285 230 Z" ' + KROPP + '/>',
+        glans: 'M246 156 L254 156 L281 196 L277 200 Z' },
+  lb: { namn: 'LÅGT GLAS', rymd: 15, y: 306, h: 94, form: 'M241 208 L329 208 L324 306 L246 306 Z',
+        kontur: '<path d="M238 206 L332 206 L326 316 L244 316 Z" ' + KROPP + '/>',
+        is: [[250, 271, 32, -8], [287, 273, 30, 12], [261, 239, 31, 15], [294, 241, 28, -10]],
+        glans: 'M247 212 L255 212 L258 300 L251 300 Z' },
+  fl: { namn: 'CHAMPAGNEGLAS', rymd: 17, y: 242, h: 134, form: 'M266 106 L304 106 L299 225 Q285 245 271 225 Z',
+        kontur: '<rect x="283" y="244" width="4" height="64" fill="#cfd8dc"/>' + FOT + '<path d="M263 104 L307 104 L302 226 Q285 250 268 226 Z" ' + KROPP + '/>',
+        glans: 'M270 110 L276 110 L277 218 L273 220 Z' },
+  hb: { namn: 'HIGHBALL', rymd: 24, y: 313, h: 205, form: 'M239 98 L331 98 L320 313 L250 313 Z',
+        kontur: '<path d="M236 96 L334 96 L322 316 L248 316 Z" ' + KROPP + '/>',
+        is: [[253, 277, 33, -7], [287, 279, 31, 11], [260, 241, 33, 16], [293, 244, 30, -12], [250, 205, 32, -15],
+             [288, 208, 33, 7], [266, 170, 33, 22], [296, 174, 28, -20], [246, 168, 26, 10]],
+        glans: 'M246 104 L256 104 L264 306 L256 306 Z' },
+  mg: { namn: 'MUGG', rymd: 26, y: 310, h: 128, form: 'M239 179 L309 179 L309 310 L239 310 Z',
+        kontur: '<path d="M310 210 Q338 212 338 246 Q338 280 310 282" fill="none" stroke="#cfd8dc" stroke-width="7"/>' +
+                '<rect x="236" y="176" width="76" height="140" rx="6" ' + KROPP + '/>',
+        glans: 'M244 184 L251 184 L251 304 L244 304 Z' },
+  st: { namn: 'STORT GLAS', rymd: 56, y: 313, h: 218, form: 'M233 92 L337 92 L328 313 L242 313 Z',
+        kontur: '<path d="M230 90 L340 90 L330 316 L240 316 Z" ' + KROPP + '/>',
+        is: [[248, 277, 33, -7], [290, 279, 31, 11], [262, 241, 33, 16], [298, 244, 30, -12], [246, 206, 30, 12]],
+        glans: 'M240 98 L250 98 L257 306 L249 306 Z' }
+};
+var glastyp = 'hb';
+function byggGlas(typ) {
+  glastyp = GLAS[typ] ? typ : 'hb';
+  var g = GLAS[glastyp], klipp = ' clip-path="url(#glasform)"';
+  var is = (g.is || []).map(function (b) {
+    return '<rect x="' + b[0] + '" y="' + b[1] + '" width="' + b[2] + '" height="' + b[2] + '" rx="4" transform="rotate(' + b[3] + ' ' +
+           (b[0] + b[2] / 2) + ' ' + (b[1] + b[2] / 2) + ')"/>';
+  }).join('');
+  el('karl-g').innerHTML =
+    '<defs><clipPath id="glasform"><path d="' + g.form + '"/></clipPath></defs>' + g.kontur +
+    '<g class="lager-g"' + klipp + '></g>' +
+    '<g' + klipp + ' fill="#e9f3f6" fill-opacity="0.42" stroke="#b9cdd4" stroke-width="2">' + is + '</g>' +     // isen tar plats
+    '<path d="' + g.glans + '" fill="#ffffff" opacity="0.25"/>';
+}
 var DROPP = 0.2;         // mindre än så här räknas som spill och struntas i
 var TVEKAN = 150;        // ms flaskan lutar innan det börjar rinna
 var SKAKMAL = 6000;      // px snabb musrörelse som krävs för att shakern ska vara skakad
@@ -345,9 +377,10 @@ function blandfarg(inne) {
 }
 function ritaKarl(k) {
   var inne = k == 's' ? shaker : glas, tot = summa(inne);
-  var maxh = k == 's' ? 170 : 205, y = k == 's' ? 295 : 313, x = k == 's' ? 111 : 236, w = k == 's' ? 18 : 98;
-  // nivån är rak: med isen rymmer glaset 22 cl. Mer än fullt syns inte, men räknas.
-  var hojd = maxh * Math.min(1, tot / RYMD[k]), svg = '';
+  var G = GLAS[glastyp], rymd = k == 's' ? RYMD.s : G.rymd;
+  var maxh = k == 's' ? 170 : G.h, y = k == 's' ? 295 : G.y, x = k == 's' ? 111 : 226, w = k == 's' ? 18 : 118;
+  // nivån är rak upp till kärlets rymd. Mer än fullt syns inte, men räknas.
+  var hojd = maxh * Math.min(1, tot / rymd), svg = '';
   function lager(h, farg) { y -= h; svg += '<rect x="' + x + '" y="' + y.toFixed(1) + '" width="' + w + '" height="' + (h + 0.5).toFixed(1) + '" fill="' + farg + '"/>'; }
   if (tot > 0) {
     // det hopskakade som ett blandat lager i botten, resten som ett lager per flaska ovanpå
@@ -360,7 +393,7 @@ function ritaKarl(k) {
   }
   var gg = document.querySelectorAll('.lager-' + k);
   for (var i = 0; i < gg.length; i++) gg[i].innerHTML = svg;
-  var fullt = tot >= RYMD[k];
+  var fullt = tot >= rymd;
   if (k == 's') {
     el('namn-s').textContent = skakad() ? 'SKAKAD!' : fullt ? 'FULL!' : 'SHAKER';
     el('namn-s').classList.toggle('klar', skakad() || fullt);
@@ -538,7 +571,8 @@ function loop(nu) {
     if (zon) {
       var r = el('karl-' + zon).getBoundingClientRect();
       sx = Math.min(Math.max(mx, r.left + 12), r.right - 16);
-      botten = r.bottom - 8;
+      // strålen slutar i botten av kärlets insida (i ett glas på fot är det långt ovanför foten)
+      botten = zon == 'g' ? r.top + (GLAS[glastyp].y - 86) / 240 * r.height : r.bottom - 8;
     }
     strale.style.background = farg;
     strale.style.left = sx + 'px';
@@ -555,36 +589,54 @@ function loop(nu) {
 
 // ---------- poäng ----------
 // d = cocktail, s = { glas, viaShaker, viaSkakad }. Bara det som är i glaset räknas.
-// Ger { rader: [[text, receptet, hällt, poäng], ...], metod: [...], total }
+// Det är proportionerna som bedöms, inte mängden: dubbelt så mycket av allt ger samma poäng.
+// Ger { rader: [[text, receptet, hällt, poäng], ...], metod: [...], skala, total }
+var SKALA_MIN = 0.5, SKALA_MAX = 3;      // så liten eller stor får drinken vara jämfört med receptet
 function raknaPoang(d, s) {
   var recept = d[2], andel = 85 / recept.length, sum = 0, rader = [], tot = {};
   for (var id in s.glas) if (s.glas[id] >= DROPP) tot[id] = s.glas[id];
-  function traff(fick, ville) { return Math.max(0, 1 - Math.abs(fick - ville) / ville); }
+  function sort(id) { return FLASKOR[id][2]; }
 
-  var saknas = [];
+  // 1. Para ihop receptet med det som hälldes: rätt flaska först, sedan en annan flaska av
+  //    samma sort (sprit mot sprit, juice mot juice). Varje flaska kan bara stå för en ingrediens.
+  var par = [], saknas = [];
   recept.forEach(function (r) {
-    if (tot[r[0]] === undefined) { saknas.push(r); return; }
-    var p = andel * traff(tot[r[0]], r[1]);
-    sum += p;
-    rader.push([FLASKOR[r[0]][0], cl(r[1]), cl1(tot[r[0]]), p]);
-    delete tot[r[0]];
+    if (tot[r[0]] !== undefined) { par.push({ r: r, id: r[0], byte: false }); delete tot[r[0]]; }
+    else saknas.push(r);
   });
-  // fel flaska men rätt mängd: para ihop det som saknas med det som blev över, bästa träff först
-  var over = Object.keys(tot);
+  function skalaNu() {
+    var hallt = 0, ville = 0;
+    par.forEach(function (p) { hallt += s.glas[p.id]; ville += p.r[1]; });
+    if (!ville) { for (var id in s.glas) hallt += s.glas[id] >= DROPP ? s.glas[id] : 0; recept.forEach(function (r) { ville += r[1]; }); }
+    return hallt / ville;
+  }
+  var over = Object.keys(tot), k0 = skalaNu() || 1;
   while (saknas.length && over.length) {
     var bast = null;
     saknas.forEach(function (r, i) {
       over.forEach(function (id, j) {
-        var t = traff(tot[id], r[1]);
-        if (t > 0 && (!bast || t > bast.t)) bast = { t: t, i: i, j: j };
+        if (sort(id) != sort(r[0])) return;
+        var miss = Math.abs(tot[id] - k0 * r[1]) / (k0 * r[1]);
+        if (!bast || miss < bast.miss) bast = { miss: miss, i: i, j: j };
       });
     });
     if (!bast) break;
-    var r = saknas.splice(bast.i, 1)[0], id = over.splice(bast.j, 1)[0];
-    var p = andel * bast.t * 0.5;
-    sum += p;
-    rader.push([FLASKOR[r[0]][0] + ' (du tog ' + FLASKOR[id][0] + ')', cl(r[1]), cl1(tot[id]), p]);
+    par.push({ r: saknas.splice(bast.i, 1)[0], id: over.splice(bast.j, 1)[0], byte: true });
   }
+
+  // 2. Skalan: hur stor drinken blev jämfört med receptet, räknat bara på det som parats ihop.
+  //    Överflödiga flaskor påverkar alltså inte hur de andra bedöms.
+  var skala = par.length ? skalaNu() : 0;
+  var k = Math.min(SKALA_MAX, Math.max(SKALA_MIN, skala));
+
+  // 3. Varje ingrediens jämförs med sin andel av drinken i den skalan.
+  par.sort(function (x, y) { return recept.indexOf(x.r) - recept.indexOf(y.r); });
+  par.forEach(function (p) {
+    var mal = k * p.r[1], fick = s.glas[p.id];
+    var po = andel * Math.max(0, 1 - Math.abs(fick - mal) / mal) * (p.byte ? 0.5 : 1);
+    sum += po;
+    rader.push([FLASKOR[p.r[0]][0] + (p.byte ? ' (du tog ' + FLASKOR[p.id][0] + ')' : ''), cl(p.r[1]), cl1(fick), po]);
+  });
   saknas.forEach(function (r) { rader.push([FLASKOR[r[0]][0], cl(r[1]), 'ingenting', 0]); });
   over.forEach(function (id) { sum -= 5; rader.push([FLASKOR[id][0] + ' (hör inte hit)', '-', cl1(tot[id]), -5]); });
 
@@ -592,9 +644,9 @@ function raknaPoang(d, s) {
   var oskakat = s.viaShaker - s.viaSkakad;
   var fick = s.viaShaker < DROPP ? 'byggd i glaset' : oskakat >= DROPP ? 'oskakad ur shakern' : 'skakad';
   var ville = d[1] == 's' ? 'skakad' : 'byggd i glaset';
-  var ratt = fick == ville && Object.keys(s.glas).length > 0;
+  var ratt = fick == ville && par.length > 0;      // inga metodpoäng för ett glas utan något som hör till drinken
   if (ratt) sum += 15;
-  return { rader: rader, metod: ['Metod', ville, fick, ratt ? 15 : 0],
+  return { rader: rader, metod: ['Metod', ville, fick, ratt ? 15 : 0], skala: skala,
            total: Math.min(100, Math.max(0, Math.round(sum))) };
 }
 function dom(p) {
@@ -626,6 +678,7 @@ function nyTur() {
   if (!kortlek.length) kortlek = blanda(COCKTAILS.slice());
   drink = kortlek.pop();
   shaker = {}; glas = {}; shakerBlandat = {}; glasSkakat = {}; skak = 0; viaShaker = 0; viaSkakad = 0; spill = 0;
+  byggGlas(GLASTYP[drink[0]]);
   ritaKarl('s'); ritaKarl('g');
   var vem = namn[tur % namn.length], nr = Math.floor(tur / namn.length) + 1;
   el('spel-vem').textContent = vem + ' (drink ' + nr + ' av ' + RUNDOR + ')';
@@ -650,6 +703,7 @@ function servera() {
     rad(t, [r[0], r[1], r[2], r[3].toFixed(1).replace('.', ',')]);
   });
   var svinn = [], kvar = summa(shaker);
+  if (res.skala) svinn.push('Din drink blev ' + res.skala.toFixed(1).replace('.', ',') + ' gånger receptet');
   if (kvar >= DROPP) svinn.push('Kvar i shakern: ' + cl1(kvar));
   if (spill >= DROPP) svinn.push('Spillt: ' + cl1(spill));
   el('res-svinn').textContent = svinn.join('  |  ');

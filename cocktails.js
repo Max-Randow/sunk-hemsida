@@ -222,3 +222,31 @@ var COCKTAILS = [
   ['Yellow Bird', 's', [['ljusrom', 3], ['galliano', 1.5], ['triplesec', 1.5], ['lime', 1.5]]],
   ['Barracuda', 's', [['lagradrom', 4.5], ['galliano', 1.5], ['ananas', 6], ['prosecco', 3]]]
 ];
+
+// Vilket glas varje drink serveras i. Glasen ritas i barmaster.html (GLAS).
+//   sh = shotglas, ck = cocktailglas, lb = lågt glas, fl = champagneglas,
+//   hb = highball, mg = mugg, st = stort glas. Saknas en drink här blir det highball.
+var GLASTYP = {};
+(function () {
+  var per = {
+    sh: ['Ingefärashotten', 'Hot Shot', 'B-52'],
+    st: ['Strongster', 'Strongster Deluxe'],
+    mg: ['Minttukakao', 'Jagertee', 'Moscow Mule', 'Irish Coffee'],
+    fl: ['Bellini', 'Champagne Cocktail', 'French 75', 'Kir', 'Kir Royal', 'Mimosa', 'Old Cuban'],
+    lb: ['Kommitténs GT', 'GT 95-5', 'Parkeringsböter', 'Gin Basil Smash', 'Negroni', 'Whiskey Sour', 'Americano', 'Boulevardier',
+         'Old Fashioned', 'Rusty Nail', 'Sazerac', 'Vieux Carré', 'Black Russian', 'White Russian', 'Caipirinha', 'French Connection',
+         'Godfather', 'Godmother', 'Mai Tai', 'Mint Julep', 'Pisco Sour', 'Bramble', 'Canchanchara', 'New York Sour', 'Penicillin',
+         "Tommy's Margarita", 'Ve.n.to'],
+    ck: ['Dry Martini', 'Espresso Martini', 'Alexander', 'Angel Face', 'Aviation', 'Between the Sheets', 'Brandy Crusta', 'Casino',
+         'Clover Club', 'Daiquiri', 'Hanky Panky', 'Last Word', 'Manhattan', 'Martinez', 'Mary Pickford', 'Monkey Gland', 'Paradise',
+         'Porto Flip', 'Sidecar', 'Stinger', 'Tuxedo', 'White Lady', 'Bronx', 'Bacardi Cocktail', 'Corpse Reviver #2', 'Cosmopolitan',
+         'Golden Dream', 'Grasshopper', 'Hemingway Special', 'Kamikaze', 'Margarita', 'Vesper', "Bee's Knees", 'French Martini',
+         'Illegal', 'Lemon Drop Martini', 'Naked and Famous', 'Paper Plane', 'Southside', 'Spicy Fifty', 'Tipperary', 'Trinidad Sour',
+         'Yellow Bird'],
+    hb: ['Jägerbomb', 'Vargtass', 'Fernet Cola', 'Long Island Iced Tea', 'Tom Collins', 'Gin Fizz', "Planter's Punch", 'Ramos Gin Fizz',
+         'Bloody Mary', 'Cuba Libre', 'Harvey Wallbanger', "Horse's Neck", 'Mojito', 'Piña Colada', 'Screwdriver', 'Sea Breeze',
+         'Sex on the Beach', 'Singapore Sling', 'Tequila Sunrise', 'Zombie', "Dark 'n' Stormy", 'Paloma', 'Russian Spring Punch',
+         'Aperol Spritz', 'Suffering Bastard', 'Barracuda']
+  };
+  for (var typ in per) per[typ].forEach(function (n) { GLASTYP[n] = typ; });
+})();

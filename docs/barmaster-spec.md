@@ -46,9 +46,13 @@ pouring them yourself.
   into the shaker resets this. Hold the button over the glass to strain, at
   4 cl per second. Click the shaker's place (or the bar) to put it back.
 - The only feedback is the level in the shaker's window and in the glass. The
-  level is linear: the glass is drawn full of ice and looks full at 22 cl, and so does the
-  shaker. Past that the label reads `FULLT!` / `FULL!`; pouring still
-  counts but the level no longer moves.
+  level is linear up to the container's capacity. Past that the label reads
+  `FULLT!` / `FULL!`; pouring still counts but the level no longer moves.
+- **The glass matches the drink** (`GLASTYP` in `cocktails.js`, drawn from
+  `GLAS` in `barmaster.html`). Its size is a
+  hint about how big the drink is. Capacities: shot glass 6.5 cl, cocktail
+  glass 14, low glass 15, champagne glass 17, highball 24, mug 26, big glass
+  56. The shaker looks full at 22 cl. Low, highball and big glasses have ice.
 - No undo and no timer. `SERVERA` ends the turn and shows the score, what
   ended up in the glass, the correct recipe, and what was spilled or left in
   the shaker.
@@ -71,35 +75,45 @@ var COCKTAILS = [ ['Negroni', 'g', [['gin', 3], ['campari', 3], ['rodvermouth', 
 ## Scoring (0–100 per drink)
 
 Only what is in the glass counts. Anything under 0.2 cl is treated as a drip
-and ignored.
+and ignored. It is the **proportions** that are judged, not the amounts: a
+drink made at double size scores the same as one made at recipe size.
 
 **Ingredients – 85 points.** With `n` ingredients in the recipe each is worth
 `85 / n`.
 
-1. Right bottle: `accuracy = max(0, 1 − |poured − wanted| / wanted)`, and the
-   ingredient earns `share × accuracy`.
-2. Swaps: recipe ingredients that were not poured are paired with wrong
-   bottles that were. The pair with the best accuracy is taken first, then the
-   next, as long as the accuracy is above 0. A swap earns
-   `share × accuracy × 0.5`.
-3. Junk: each wrong bottle left unpaired costs 5 points.
+1. **Pairing.** Each recipe ingredient is paired with at most one poured
+   bottle: the right bottle if it was poured, otherwise another bottle of the
+   same kind (the bottle's group: spirit for spirit, juice for juice, and so
+   on), closest fit first. A bottle can stand in for only one ingredient.
+2. **Scale.** `scale = cl poured in the paired bottles / cl the recipe wants
+   for those ingredients`. Bottles that were not paired are left out, so they
+   do not change how the others are judged. The scale is clamped to 0.5–3: a
+   drink smaller than half or bigger than three times the recipe is judged
+   against that limit and loses points.
+3. **Accuracy.** For each pair, `target = scale × recipe cl` and
+   `accuracy = max(0, 1 − |poured − target| / target)`. The right bottle earns
+   `share × accuracy`; a same-kind stand-in earns half of that.
+4. **Junk.** Every bottle left unpaired (wrong kind, or one more than the
+   recipe has room for) earns nothing and costs 5 points.
 
 **Method – 15 points.** A shaken drink gets them when what reached the glass
 through the shaker was shaken first (top-ups poured straight into the glass
 are fine). Any other drink gets them when nothing went through the shaker.
+No method points are given unless at least one ingredient was paired.
 
 The total is rounded and clamped to 0–100.
 
-Example, Negroni (3 gin, 3 Campari, 3 röd vermouth, built in the glass), poured
-straight into the glass as 3 gin, 2 Campari, 3 Aperol:
+Examples, Kommitténs GT (6 gin, 2 tonic, built in the glass):
 
-| Part | Calculation | Points |
-| --- | --- | --- |
-| Gin | 28.3 × 100% | 28.3 |
-| Campari | 28.3 × 67% | 18.9 |
-| Röd vermouth → Aperol | 28.3 × 100% × 0.5 | 14.2 |
-| Method | built in the glass, right | 15 |
-| **Total** | | **76** |
+| In the glass | Scale | Gin | Tonic | Method | Total |
+| --- | --- | --- | --- | --- | --- |
+| 6 gin, 2 tonic | 1.0 | 42.5 | 42.5 | 15 | 100 |
+| 12 gin, 4 tonic | 2.0 | 42.5 | 42.5 | 15 | 100 |
+| 12 gin, 2 tonic | 1.75 | 36.4 | 24.3 | 15 | 76 |
+
+Negroni (3 gin, 3 Campari, 3 röd vermouth) with Aperol instead of Campari
+scores 86 (same kind, half credit); with cola instead it scores 67 (wrong
+kind: nothing for the Campari, and −5 for the cola).
 
 ## Other
 
